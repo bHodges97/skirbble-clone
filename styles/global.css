@@ -2,10 +2,16 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
-    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  line-height: 1.6;
-  font-size: 18px;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  line-height: 20px;
+  font-size: 14px;
+  background-image: url('/background.png');
+  background-size: 256px;
+}
+
+.logoBig {
+  width: 100%;
+  max-width: 621px;
 }
 
 * {
