@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Login() {
 return (
-      <div className="loginPanelContent">
+      <div className="loginPanelContent" style={{"padding": "8px", "marginBottom": "4px"}}>
         <form>
           <div style={{"display": "flex"}}>
             <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32"/>

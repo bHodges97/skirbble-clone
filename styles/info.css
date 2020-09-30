@@ -1,0 +1,17 @@
+.panel-group {
+    margin-bottom: 20px;
+}
+.collapse.in {
+    display: block;
+}
+.updateInfo {
+    background-color: #BAFFAA;
+    border-radius: 2px;
+    border: 1px solid #90EA7C;
+    color: #105B00;
+}
+.informationTabs a {
+    font-weight: 700;
+    color: #333;
+}
+

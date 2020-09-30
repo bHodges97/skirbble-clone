@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../components/header'
 import Login from '../components/login'
+import Info from '../components/info'
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
             <div className="loginSideLeft"/>
             <div className="loginContent">
               <Login/>
+              <Info/>
             </div>
             <div className="loginSideRight"/>
           </div>
