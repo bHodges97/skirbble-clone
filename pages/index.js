@@ -14,10 +14,13 @@ export default function Home() {
       <main>
         <div className="container-fluid" style={{'max-width':"1400px", 'padding': "0px 4px 0px 4px"}}>
           <Header/>
-          <Login/>
-          <h1 className="title">
-            Join a <Link href="rooms/room-template"><a>room</a></Link>
-          </h1>
+          <div className="screenLogin">
+            <div className="loginSideLeft"/>
+            <div className="loginContent">
+              <Login/>
+            </div>
+            <div className="loginSideRight"/>
+          </div>
         </div>
       </main>
 
