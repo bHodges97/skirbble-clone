@@ -5,34 +5,33 @@ body {
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   line-height: 20px;
   font-size: 14px;
-  background-image: url('/background.png');
+  background: url('/background.png') center fixed;
   background-size: 256px;
+}
+
+.container-fluid {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.containerLogoBig {
+  justify-content: center;
+  display: flex;
+}
+
+.header {
+  width: 100%;
+  min-height: 50px;
+  margin-bottom: 8px;
 }
 
 .logoBig {
   width: 100%;
   max-width: 621px;
+  vertical-align: middle;
 }
 
 .doodleArea {
   background-color: #ffffff;
   border-radius: 2px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: #0070f3;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-img {
-  max-width: 100%;
-  display: block;
 }
