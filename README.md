@@ -1,1 +1,1 @@
-This is an open source clone of [skribbl io](https://skribble.io) using next.js.
+This is an open source clone of [skribbl io](https://skribbl.io) using next.js.
