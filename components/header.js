@@ -6,7 +6,7 @@ export default function Header() {
       <div className="containerLogoBig">
         <Link href="/">
           <a>
-            <img className="logoBig" src="logo.gif"/>
+            <img className="logoBig" src="logo.png"/>
           </a>
         </Link>
       </div>
