@@ -41,7 +41,7 @@ class Info extends React.Component {
         </div>
         <div id="tabAbout" role="tab">
           <h3>
-            <a role="button" onClick={showHide} href="#collapseAbout" aria-expanded="false" aria-controls="collapseAbout" class="collapsed">About</a>
+            <a role="button" onClick={showHide} href="#collapseAbout" aria-expanded="false" aria-controls="collapseAbout" className="collapsed">About</a>
           </h3>
         </div>
         <div id="collapseAbout" style={{"display": "none"}} className="panel-collapse collapse in" role="tabpanel" aria-labelledby="tabUpdate" aria-expanded="true">

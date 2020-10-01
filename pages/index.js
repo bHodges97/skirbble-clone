@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Header from '../components/header'
 import Login from '../components/login'
 import Info from '../components/info'
+import socketIOClient from "socket.io-client"
 
 export default function Home() {
   return (
