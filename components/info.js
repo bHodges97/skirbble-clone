@@ -53,7 +53,7 @@ class Info extends React.Component {
 
         <div id="tabHow" role="tab">
           <h3>
-            <a class="collapsed" onClick={showHide} role="button" href="#collapseHow" aria-expanded="false" aria-controls="collapseHow">
+            <a className="collapsed" onClick={showHide} role="button" href="#collapseHow" aria-expanded="false" aria-controls="collapseHow">
               How to Play
             </a>
           </h3>

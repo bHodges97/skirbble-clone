@@ -1,28 +1,28 @@
-const { createServer } = require('http')
-const { parse } = require('url')
+const app = require('express')()
+const server = require('http').Server(app)
 const next = require('next')
+const socketio = require('socket.io')
 
+const io = socketio(server);
 const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev })
-const handle = app.getRequestHandler()
+const nextApp = next({ dev })
+const nextHandle = nextApp.getRequestHandler()
 
-app.prepare().then(() => {
-  createServer((req, res) => {
-    // Be sure to pass `true` as the second argument to `url.parse`.
-    // This tells it to parse the query portion of the URL.
-    const parsedUrl = parse(req.url, true)
-    const { pathname, query } = parsedUrl
+io.on('connect', socket => {
+	socket.emit('now',{
+		message: 'message received',
+	})
+});
 
-    if (pathname === '/a') {
-      app.render(req, res, '/a', query)
-    } else if (pathname === '/b') {
-      app.render(req, res, '/b', query)
-    } else {
-      handle(req, res, parsedUrl)
-    }
-  }).listen(3000, (err) => {
+nextApp.prepare().then(() => {
+	app.get('*',(req,res)=>{
+		return nextHandle(req,res)
+	})
+	
+	server.listen(3000, (err) => {
     if (err) throw err
     console.log('> Ready on http://localhost:3000')
   })
 })
+
 
