@@ -1,0 +1,70 @@
+.avatarArrowRight {
+  -moz-transform: scale(-1, -1);
+  -o-transform: scale(-1, -1);
+  -webkit-transform: scale(-1, -1);
+  transform: scale(-1, -1);
+}
+
+.avatarArrow {
+  flex: 0 0 auto;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  background-image: url(/arrow.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
+.avatarArrows {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#loginAvatarCustomizeContainer {
+  margin-top: 8px;
+  background-color: #f5f4f4;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  border: 1px solid #d3d3d3;
+  border-radius: 2px;
+}
+
+.avatarContainer {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+}
+
+.avatar {
+  pointer-events: none;
+  user-select: none;
+  position: relative;
+  flex: 0 0 auto;
+  height: 48px;
+  width: 48px;
+
+}
+
+.colors, .faces, .hats, .avatarFit {
+  width: 100%;
+  height: 100%;
+}
+
+.colors, .faces, .hats {
+  position: absolute;
+  background-repeat: no-repeat;
+}
+
+.colors {
+  background-image: url(/colors.png);
+}
+
+.faces {
+  background-image: url(/faces.png);
+}
+
+.hats {
+  background-image: url(/hats.png);
+}

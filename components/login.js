@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AvatarSelector from './avatarselector'
 
 export default function Login() {
 return (
@@ -10,6 +11,7 @@ return (
               <option>English</option>
             </select>
           </div>
+          <AvatarSelector/>
           <div>
             <button className="btn btnBlock btnSuccess" type="submit"> 
               Play!

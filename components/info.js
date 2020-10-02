@@ -3,12 +3,6 @@ import React from "react"
 class Info extends React.Component {
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this); 
-  }
-
-  handleClick(e) {
-    this.setState(state => ({}));  
-    const ctx = e.target.getContext('2d');
   }
 
   render() {
