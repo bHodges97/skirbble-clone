@@ -25,7 +25,7 @@ class Info extends React.Component {
           <a role="button" onClick={showHide} href="#collapseUpdate" aria-expanded="true" aria-controls="collapseUpdate">News</a>
           </h3>
         </div>
-        <div id="collapseUpdate" className="updateInfo collapse in" role="tabpanel" aria-labelledby="tabUpdate" aria-expanded="true">
+        <div id="collapseUpdate" style={{"display": "block"}}className="updateInfo collapse in" role="tabpanel" aria-labelledby="tabUpdate" aria-expanded="true">
           Hello!
 
           This is a clone of skribbl.io!
