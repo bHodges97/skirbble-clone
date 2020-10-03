@@ -35,7 +35,7 @@ class Home extends React.Component {
 
         <main>
           <div className="container-fluid" style={{'maxWidth':"1400px", 'padding': "0px 4px 0px 4px"}}>
-            <Header/>
+            <Header data="block"/>
             <div className="screenLogin">
               <div className="loginSideLeft"/>
               <div className="loginContent">

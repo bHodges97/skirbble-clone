@@ -1,0 +1,25 @@
+#containerLogoBig {
+  display: flex;
+  justify-content: center;
+}
+
+#containerLogoSmall {
+  flex: 1 1 auto;
+}
+
+.header {
+  width: 100%;
+  min-height: 50px;
+  margin-bottom: 8px;
+}
+
+.logoBig {
+  width: 100%;
+  max-width: 621px;
+}
+
+.logoSmall{
+  width: 320px;
+}
+
+

@@ -5,10 +5,10 @@ class AvatarSelector extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this); 
-    this.state = {data:{0:0,1:0,2:0,scale:96}}
+    this.state = {data:{hat:0,face:0,color:0,scale:96}}
   }
 
-  handleClick(e,i,j) {
+  handleClick(i,j) {
     let arr = this.state.data
     let a = arr[i] + j
     if(a<0)a=13;
@@ -21,17 +21,17 @@ class AvatarSelector extends React.Component {
     return (
       <div id="loginAvatarCustomizeContainer">
         <div className="avatarArrows">
-          <div className="avatarArrow" onClick={(e)=>this.handleClick(e,0,-1)}></div>
-          <div className="avatarArrow" onClick={(e)=>this.handleClick(e,1,-1)}></div>
-          <div className="avatarArrow" onClick={(e)=>this.handleClick(e,2,-1)}></div>
+          <div className="avatarArrow" onClick={()=>this.handleClick("hat",-1)}></div>
+          <div className="avatarArrow" onClick={()=>this.handleClick("face",-1)}></div>
+          <div className="avatarArrow" onClick={()=>this.handleClick("color",-1)}></div>
         </div>
         <div className="avatarContainer">
           <Avatar data={this.state.data}/>
         </div>
         <div className="avatarArrows">
-          <div className="avatarArrow avatarArrowRight" onClick={(e)=>this.handleClick(e,0,1)}></div>
-          <div className="avatarArrow avatarArrowRight" onClick={(e)=>this.handleClick(e,1,1)}></div>
-          <div className="avatarArrow avatarArrowRight" onClick={(e)=>this.handleClick(e,2,1)}></div>
+          <div className="avatarArrow avatarArrowRight" onClick={()=>this.handleClick("hat",1)}></div>
+          <div className="avatarArrow avatarArrowRight" onClick={()=>this.handleClick("face",1)}></div>
+          <div className="avatarArrow avatarArrowRight" onClick={()=>this.handleClick("color",1)}></div>
         </div>
       </div>
   )

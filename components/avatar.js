@@ -20,9 +20,9 @@ class Avatar extends React.Component {
   render() {
     return (
       <div className="avatar avatarFit">
-        <div className="colors" style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data[2])}}/>
-        <div className="faces " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data[1])}}/>
-        <div className="hats  " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data[0])}}/>
+        <div className="colors" style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data.color)}}/>
+        <div className="faces " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data.face)}}/>
+        <div className="hats  " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.data.hat)}}/>
       </div>
     )
   }
