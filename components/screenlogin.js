@@ -2,7 +2,7 @@ import Link from 'next/link'
 import AvatarSelector from './avatarselector'
 import Info from './info'
 
-class Login extends React.Component {
+class ScreenLogin extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -44,4 +44,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login
+export default ScreenLogin

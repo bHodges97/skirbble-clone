@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from "react"
 
 import Header from 'components/header'
-import Login from 'components/login'
+import ScreenGame from 'components/screengame'
 import Info from 'components/info'
 import io from "socket.io-client"
 
@@ -28,7 +28,7 @@ class Game extends React.Component {
         <main>
           <div className="container-fluid" style={{'maxWidth':"1400px", 'padding': "0px 4px 0px 4px"}}>
             <Header data="none"/>
-            <Login/>
+            <ScreenGame/>
           </div>
         </main>
 

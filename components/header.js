@@ -9,14 +9,16 @@ class Canvas extends React.Component {
   render() {
   return (
     <div className="header">
-      <div id="containerLogoBig" style={{"display": this.props.data=="none"?"none":""}}>
+      {this.props.data!="none"?
+      <div id="containerLogoBig">
         <Link href="/">
           <a>
             <img className="logoBig" src="logo.png"/>
           </a>
         </Link>
       </div>
-      <div id="containerLogoSmall" style={{"display": this.props.data=="none"?"":"none"}}>
+      :
+      <div id="containerLogoSmall">
         <div className="LogoSmallWrapper">
           <Link href="/">
             <a>
@@ -25,6 +27,7 @@ class Canvas extends React.Component {
           </Link>
         </div>
       </div>
+      }
     </div>
   )
   }
