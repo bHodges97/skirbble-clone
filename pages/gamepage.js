@@ -1,3 +1,4 @@
+import Canvas from 'components/canvas'
 import Head from 'next/head'
 import Link from 'next/link'
 import React from "react"
@@ -7,22 +8,13 @@ import Login from 'components/login'
 import Info from 'components/info'
 import io from "socket.io-client"
 
-class Home extends React.Component {
+
+class Game extends React.Component {
   constructor(props){
     super(props);
-    this.state = {
-      test: "waiting for message"
-    }
   }
 
   componentDidMount(){
-    this.socket = io()
-    this.socket.on('now', data =>{
-      this.setState({
-        test: data.message
-      })
-    })
-  
   }
 
   render(){
@@ -35,12 +27,8 @@ class Home extends React.Component {
 
         <main>
           <div className="container-fluid" style={{'maxWidth':"1400px", 'padding': "0px 4px 0px 4px"}}>
-            <Header data="block"/>
-                <Login/>
-            <div>
-              <h1>{this.state.test}</h1>
-              <Link href="/gamepage"><a>game menu test</a></Link> 
-            </div>
+            <Header data="none"/>
+            <Login/>
           </div>
         </main>
 
@@ -50,4 +38,4 @@ class Home extends React.Component {
     )
   }
 }
-export default Home
+export default Game
