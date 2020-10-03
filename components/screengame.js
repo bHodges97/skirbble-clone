@@ -18,6 +18,11 @@ class ScreenGame extends React.Component {
         </div>
         <div className="containerGame">
           <div id="containerPlayerlist">
+            <div id="containerGamePlayers">
+            </div>
+            <button id="votekick" class="btn btnWarning btnBlock">
+              Votekick
+            </button>
           </div>
           <div id="containerBoard">
             <div id="containerCanvas">
@@ -25,7 +30,16 @@ class ScreenGame extends React.Component {
             </div>
           </div>
           <div id="containerSidebar">
+            <div id="containerFreespace"/>
             <div id="containerChat">
+              <div id="boxChat">
+                <div id="boxMessages"/>
+                <div id="boxChatInput">
+                  <form id="formChat">
+                    <input id="inputChat" class="formControl" autocomplete="off" type="text" placeholder="Type your guess here..." maxlength="100"/>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>

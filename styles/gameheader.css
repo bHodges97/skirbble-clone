@@ -72,7 +72,7 @@
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  width: 200PX;
+  width: 200px;
 }
 
 .player {
@@ -104,9 +104,32 @@
 }
 
 #containerChat {
-  background: #eee;
-  width: 100%;
+  height: 64px;
   padding: 4px;
   flex: 1 0 auto;
+  border-radius: 2px;
+}
+
+#boxChat {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+#boxMessages {
+  height: calc(100% - 34px);
+  overflow-y: auto;
+}
+
+#boxChatInput {
+  height: 34px;
+}
+
+#boxChat, #containerChat{
+  background: #eee;
+  width: 100%;
+}
+
+#containerFreespace{
+  flex: 0 0 auto;
   border-radius: 2px;
 }
