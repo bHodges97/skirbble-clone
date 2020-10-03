@@ -1,3 +1,4 @@
+import Canvas from "./canvas"
 
 class ScreenGame extends React.Component {
   constructor(props) {
@@ -14,7 +15,19 @@ class ScreenGame extends React.Component {
           <div id="round">Round 1 of 3</div>
           <div id="currentWord"></div>
           <div className="gameHeaderButtons"/>
-        
+        </div>
+        <div className="containerGame">
+          <div id="containerPlayerlist">
+          </div>
+          <div id="containerBoard">
+            <div id="containerCanvas">
+              <Canvas/>
+            </div>
+          </div>
+          <div id="containerSidebar">
+            <div id="containerChat">
+            </div>
+          </div>
         </div>
       </div>
     )

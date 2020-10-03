@@ -54,3 +54,59 @@
   display: flex;
   justify-content: space-between;
 }
+
+.containerGame {
+  display: flex;
+  justify-content: center;
+}
+
+#containerPlayerlist {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 8px;
+}
+
+#containerGamePlayers {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  width: 200PX;
+}
+
+.player {
+}
+
+#containerBoard {
+  flex: 1 1 auto;
+  min-width: 300px;
+  position: relative;
+  margin: 0;
+  line-height: 0;
+}
+
+#containerCanvas {
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#containerSidebar {
+  position: relative;
+  margin-width: 8px;
+  width: 340px;
+  min-width: 340px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#containerChat {
+  background: #eee;
+  width: 100%;
+  padding: 4px;
+  flex: 1 0 auto;
+  border-radius: 2px;
+}
