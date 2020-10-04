@@ -15,6 +15,7 @@ class ScreenLogin extends React.Component {
     };
     this.joinGame = this.joinGame.bind(this)
     this.updateAvatar = this.updateAvatar.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   joinGame(e){
@@ -24,6 +25,11 @@ class ScreenLogin extends React.Component {
 
   updateAvatar(key, val){
     this.setState({[key]: val})
+  }
+
+
+  handleChange(event) {
+    this.setState({name: event.target.value});  
   }
 
   render() {
@@ -36,7 +42,7 @@ class ScreenLogin extends React.Component {
           <div className="loginPanelContent" style={{"padding": "8px", "marginBottom": "4px"}}>
             <form onSubmit={this.joinGame}>
               <div style={{"display": "flex"}}>
-                <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32" value={this.state.name}/>
+                <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32" value={this.state.name} onChange={this.handleChange}/>
                 <select id="loginLanguage" className="formControl">
                   <option>English</option>
                 </select>
