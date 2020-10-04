@@ -5,7 +5,7 @@ import React from "react"
 import Header from 'components/header'
 import ScreenLogin from 'components/screenlogin'
 import Info from 'components/info'
-import io from "socket.io-client"
+import SocketContext from "components/socketcontext"
 
 class Home extends React.Component {
   constructor(props){
@@ -16,13 +16,12 @@ class Home extends React.Component {
   }
 
   componentDidMount(){
-    this.socket = io()
+    this.socket = this.context
     this.socket.on('now', data =>{
       this.setState({
         test: data.message
       })
     })
-  
   }
 
   render(){
@@ -50,4 +49,5 @@ class Home extends React.Component {
     )
   }
 }
+Home.contextType = SocketContext;
 export default Home
