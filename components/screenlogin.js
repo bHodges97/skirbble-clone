@@ -1,10 +1,29 @@
 import Link from 'next/link'
 import AvatarSelector from './avatarselector'
 import Info from './info'
+import SocketContext from "./socketcontext"
 
 class ScreenLogin extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      name: '',
+      hat: 0,
+      face: 0,
+      color: 0,
+    };
+    this.joinGame = this.joinGame.bind(this)
+    this.updateAvatar = this.updateAvatar.bind(this)
+  }
+
+  joinGame(e){
+    e.preventDefault();
+    console.log("joining game");
+  }
+
+  updateAvatar(key, val){
+    this.setState({[key]: val})
   }
 
   render() {
@@ -15,14 +34,14 @@ class ScreenLogin extends React.Component {
 
         <div className="loginContent">
           <div className="loginPanelContent" style={{"padding": "8px", "marginBottom": "4px"}}>
-            <form>
+            <form onSubmit={this.joinGame}>
               <div style={{"display": "flex"}}>
-                <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32"/>
+                <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32" value={this.state.name}/>
                 <select id="loginLanguage" className="formControl">
                   <option>English</option>
                 </select>
               </div>
-              <AvatarSelector/>
+              <AvatarSelector update={this.updateAvatar}/>
               <div>
                 <button className="btn btnBlock btnSuccess" type="submit"> 
                   Play!
@@ -43,5 +62,7 @@ class ScreenLogin extends React.Component {
     )
   }
 }
+
+ScreenLogin.contexType = SocketContext;
 
 export default ScreenLogin
