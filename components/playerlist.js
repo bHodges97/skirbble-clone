@@ -24,9 +24,28 @@ class PlayerList extends React.Component {
     })
     this.socket.on('players', (data)=>{
       this.setState({players: data})
-      console.log("hello");
       console.log(this.socket.id);
       console.log(data);
+    });
+    this.socket.on('playerjoined', (data)=>{
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        if(players[i] === null){
+          players[i] = data;
+          break;
+        }
+      }
+      this.setState({players: players});
+    });
+    this.socket.on('playerleft', (data)=>{
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        if(players[i] != null && players[i].key == data){
+          players[i] = null;
+          break;
+        }
+      }
+      this.setState({players: players});
     });
   }
 

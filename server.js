@@ -66,15 +66,18 @@ io.on('connect', socket => {
 		let id = room.addPlayer(data, socket.id)
 		socket.emit('connected');
 		socket.emit('players', room.players, id);
-		socket.to(roomcode).emit('playerjoined',data);
+		socket.to(roomcode).emit('playerjoined', room.players[id]);
 		socket.join(roomcode);
 	})
 
 	socket.on('disconnecting', () => {
 		const clientrooms = Object.keys(socket.rooms);
 		if(clientrooms.length == 2){
-			rooms.get(clientrooms[1]).removePlayer(clientrooms[0])
+			let room = rooms.get(clientrooms[1]);
+			room.removePlayer(clientrooms[0]);
+			io.to(clientrooms[1]).emit('playerleft',socket.id);
 		}
+
 		// the rooms array contains at least the socket ID
 	});
 });
