@@ -9,7 +9,6 @@ class PlayerList extends React.Component {
     this.renderPlayer = this.renderPlayer.bind(this);
 
     this.state = {
-      messages: [],
       players: [],
     };
   }
@@ -17,11 +16,6 @@ class PlayerList extends React.Component {
   
   componentDidMount(){
     this.socket = this.context
-    this.socket.on('now', data =>{
-      this.setState({
-        test: data.message
-      })
-    })
     this.socket.on('players', (data)=>{
       this.setState({players: data})
       console.log(this.socket.id);

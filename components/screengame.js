@@ -1,5 +1,6 @@
 import Canvas from "./canvas"
 import PlayerList from "./playerlist"
+import ChatArea from "./chatarea"
 
 class ScreenGame extends React.Component {
   constructor(props) {
@@ -26,16 +27,7 @@ class ScreenGame extends React.Component {
           </div>
           <div id="containerSidebar">
             <div id="containerFreespace"/>
-            <div id="containerChat">
-              <div id="boxChat">
-                <div id="boxMessages"/>
-                <div id="boxChatInput">
-                  <form id="formChat">
-                    <input id="inputChat" className="formControl" autoComplete="off" type="text" placeholder="Type your guess here..." maxLength="100"/>
-                  </form>
-                </div>
-              </div>
-            </div>
+            <ChatArea/>
           </div>
         </div>
       </div>

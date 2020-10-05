@@ -13,9 +13,9 @@ class ScreenLogin extends React.Component {
       face: 0,
       color: 0,
     };
-    this.joinGame = this.joinGame.bind(this)
-    this.updateAvatar = this.updateAvatar.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.joinGame = this.joinGame.bind(this);
+    this.updateAvatar = this.updateAvatar.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   joinGame(e){

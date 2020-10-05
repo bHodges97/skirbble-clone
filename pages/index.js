@@ -48,8 +48,6 @@ class Home extends React.Component {
               <ScreenGame/>
             }
             <div>
-              <h1>{this.state.test}</h1>
-              <Link href="/gamepage"><a>game menu test</a></Link> 
             </div>
           </div>
         </main>
