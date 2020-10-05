@@ -31,7 +31,7 @@ class ScreenGame extends React.Component {
                 <div id="boxMessages"/>
                 <div id="boxChatInput">
                   <form id="formChat">
-                    <input id="inputChat" class="formControl" autoComplete="off" type="text" placeholder="Type your guess here..." maxLength="100"/>
+                    <input id="inputChat" className="formControl" autoComplete="off" type="text" placeholder="Type your guess here..." maxLength="100"/>
                   </form>
                 </div>
               </div>

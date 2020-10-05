@@ -24,7 +24,8 @@ class Room{
 			if(this.players[i] === undefined){
 				this.players[i] = data;
 				this.players[i].score = 0;
-				this.players[i].id = id;
+				this.players[i].key = id;
+				this.playerCount+=1
 				return i
 			}
 		}
@@ -32,8 +33,9 @@ class Room{
 
 	removePlayer(id){
 		for(let i=0; i < this.players.length; i++){
-			if(this.players[i] !== undefined && this.players[i].id == id){
+			if(this.players[i] !== undefined && this.players[i].key == id){
 				this.players[i] = undefined;
+				this.playerCount-=1
 				return i;
 			}
 		}

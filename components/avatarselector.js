@@ -35,7 +35,7 @@ class AvatarSelector extends React.Component {
           <div className="avatarArrow" onClick={()=>this.handleClick("color",-1)}></div>
         </div>
         <div className="avatarContainer">
-          <Avatar hat={this.state.hat} face={this.state.face} color={this.state.color} scale={this.state.scale}/>
+          <Avatar style="avatarFit" hat={this.state.hat} face={this.state.face} color={this.state.color} scale={this.state.scale}/>
         </div>
         <div className="avatarArrows">
           <div className="avatarArrow avatarArrowRight" onClick={()=>this.handleClick("hat",1)}></div>

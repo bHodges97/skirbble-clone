@@ -1,4 +1,3 @@
-
 #round {
   flex: 0 0 auto;
   font-size: 20px;
@@ -68,15 +67,6 @@
   margin-right: 8px;
 }
 
-#containerGamePlayers {
-  display: flex;
-  flex-direction: column;
-  align-content: flex-start;
-  width: 200px;
-}
-
-.player {
-}
 
 #containerBoard {
   flex: 1 1 auto;
@@ -134,3 +124,75 @@
   flex: 0 0 auto;
   border-radius: 2px;
 }
+
+#containerGamePlayers {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  width: 200px;
+
+  .player:first-child {
+    border-radius: 2px 2px 0 0;
+  }
+
+  .player:only-child {
+    border-radius: 2px;
+  }
+
+  .player:last-child {
+    border-radius: 0 0 2px 2px;
+  }
+
+  .player:nth-child(2n+1) {
+    background: #eee;
+  }
+
+  .player:nth-child(2n) {
+      background: #fafafa;
+  }
+
+  .player {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .info {
+      flex: 1 1 auto;
+      max-width: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 1;
+      color: #000;
+      text-align: center;
+
+      .name {
+          flex: 1 1 auto;
+          font-size: 13px;
+          font-weight: 700;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+      }
+
+      .score {
+          flex: 1 1 auto;
+          font-size: 14px;
+      }
+    }
+
+    .rank {
+      width: 34px;
+      flex: 0 0 auto;
+      color: #000;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 30px;
+      text-align: center;
+    }
+  }
+}
+

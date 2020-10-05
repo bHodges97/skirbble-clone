@@ -3,12 +3,8 @@ import React from "react"
 class Avatar extends React.Component {
   constructor(props) {
     super(props);
-    this.getBgSize = this.getBgSize.bind(this); 
-  }
-
-  getBgSize(){
     let px = String(this.props.scale * 10)+"px"
-    return px + " " + px
+    this.state = {bgSize : px + " " + px};
   }
 
   getOffset(offset){
@@ -19,10 +15,10 @@ class Avatar extends React.Component {
 
   render() {
     return (
-      <div className="avatar avatarFit">
-        <div className="colors" style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.color)}}/>
-        <div className="faces " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.face)}}/>
-        <div className="hats  " style={{"backgroundSize": this.getBgSize(), "backgroundPosition": this.getOffset(this.props.hat)}}/>
+      <div className={"avatar "+this.props.style}>
+        <div className="colors" style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.color)}}/>
+        <div className="faces " style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.face)}}/>
+        <div className="hats  " style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.hat)}}/>
       </div>
     )
   }
