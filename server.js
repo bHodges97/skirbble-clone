@@ -7,7 +7,10 @@ const io = socketio(server);
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const nextHandle = nextApp.getRequestHandler()
+const fs = require('fs');
 
+let wordfile = fs.readFileSync('words.json');
+const wordlist = JSON.parse(wordfile).words;
 
 class Room{
 	constructor(id){
@@ -41,6 +44,9 @@ class Room{
 		}
 	}
 }
+function random_item(items){
+	return items[Math.floor(Math.random()*items.length)];
+}
 
 rooms = new Map()
 
@@ -52,6 +58,9 @@ io.on('connect', socket => {
 		message: 'message received',
 	})
 	socket.on('join', (data)=>{
+		if(data.name == ""){
+			data.name = random_item(wordlist);
+		}
 		let roomcode = "room1";
 		let room = rooms.get(roomcode);
 		let id = room.addPlayer(data, socket.id)
