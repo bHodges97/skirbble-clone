@@ -4,6 +4,7 @@ import React from "react"
 
 import Header from 'components/header'
 import ScreenLogin from 'components/screenlogin'
+import ScreenGame from 'components/screengame'
 import Info from 'components/info'
 import SocketContext from "components/socketcontext"
 
@@ -11,7 +12,8 @@ class Home extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      test: "waiting for message"
+      test: "waiting for message",
+      gameState: 'lobby',
     }
   }
 
@@ -21,6 +23,11 @@ class Home extends React.Component {
       this.setState({
         test: data.message
       })
+    })
+    this.socket.on('connected', ()=>{
+      this.setState({gameState: 'playing'})
+      console.log("connected")
+      window.scrollTo(0,0)
     })
   }
 
@@ -34,8 +41,12 @@ class Home extends React.Component {
 
         <main>
           <div className="container-fluid" style={{'maxWidth':"1400px", 'padding': "0px 4px 0px 4px"}}>
-            <Header data="block"/>
-                <ScreenLogin/>
+            <Header data={this.state.gameState=='lobby'?"block":"none"}/>
+            {this.state.gameState=='lobby'?
+              <ScreenLogin/>
+              :
+              <ScreenGame/>
+            }
             <div>
               <h1>{this.state.test}</h1>
               <Link href="/gamepage"><a>game menu test</a></Link> 

@@ -20,7 +20,14 @@ class ScreenLogin extends React.Component {
 
   joinGame(e){
     e.preventDefault();
-    console.log("joining game");
+    this.socket = this.context
+    this.socket.emit('join', {
+      name: this.state.name,
+      hat: this.state.hat,
+      face: this.state.face,
+      color: this.state.color,
+    })
+    console.log("Connecting")
   }
 
   updateAvatar(key, val){
@@ -69,6 +76,6 @@ class ScreenLogin extends React.Component {
   }
 }
 
-ScreenLogin.contexType = SocketContext;
+ScreenLogin.contextType = SocketContext;
 
 export default ScreenLogin

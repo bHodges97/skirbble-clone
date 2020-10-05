@@ -1,4 +1,5 @@
 import Canvas from "./canvas"
+import PlayerList from "./playerlist"
 
 class ScreenGame extends React.Component {
   constructor(props) {
@@ -17,13 +18,7 @@ class ScreenGame extends React.Component {
           <div className="gameHeaderButtons"/>
         </div>
         <div className="containerGame">
-          <div id="containerPlayerlist">
-            <div id="containerGamePlayers">
-            </div>
-            <button id="votekick" class="btn btnWarning btnBlock">
-              Votekick
-            </button>
-          </div>
+          <PlayerList/>
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
@@ -36,7 +31,7 @@ class ScreenGame extends React.Component {
                 <div id="boxMessages"/>
                 <div id="boxChatInput">
                   <form id="formChat">
-                    <input id="inputChat" class="formControl" autocomplete="off" type="text" placeholder="Type your guess here..." maxlength="100"/>
+                    <input id="inputChat" class="formControl" autoComplete="off" type="text" placeholder="Type your guess here..." maxLength="100"/>
                   </form>
                 </div>
               </div>
