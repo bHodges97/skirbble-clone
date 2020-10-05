@@ -20,11 +20,9 @@ class Canvas extends React.Component {
       :
       <div id="containerLogoSmall">
         <div className="LogoSmallWrapper">
-          <Link href="/">
-            <a>
+            <a href="/">
               <img className="logoSmall" src="logo.png"/>
             </a>
-          </Link>
         </div>
       </div>
       }

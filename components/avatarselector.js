@@ -5,17 +5,26 @@ class AvatarSelector extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this); 
-    let rand = ()=> Math.floor(Math.random() * 13);
 
     this.state = {
-      hat: rand(),
-      face: rand(),
-      color: rand(),
+      hat: 0,
+      face: 0,
+      color: 0,
       scale:96
     }
-    props.update("hat", this.state.hat)
-    props.update("face", this.state.face)
-    props.update("color", this.state.color)
+  }
+
+  componentDidMount(){
+    let rand = ()=> Math.floor(Math.random() * 13);
+    this.setState({
+      hat: rand(),
+      face: rand(),
+      color: rand()
+    });
+
+    this.props.update("hat", this.state.hat)
+    this.props.update("face", this.state.face)
+    this.props.update("color", this.state.color)
   }
 
   handleClick(i,j) {
