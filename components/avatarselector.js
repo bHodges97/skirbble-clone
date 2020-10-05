@@ -20,11 +20,12 @@ class AvatarSelector extends React.Component {
       hat: rand(),
       face: rand(),
       color: rand()
-    });
-
-    this.props.update("hat", this.state.hat)
-    this.props.update("face", this.state.face)
-    this.props.update("color", this.state.color)
+    },()=>{
+      this.props.update("hat", this.state.hat)
+      this.props.update("face", this.state.face)
+      this.props.update("color", this.state.color)
+    }
+    );
   }
 
   handleClick(i,j) {

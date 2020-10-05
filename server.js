@@ -75,7 +75,6 @@ io.on('connect', socket => {
 		if(clientrooms.length == 2){
 			rooms.get(clientrooms[1]).removePlayer(clientrooms[0])
 		}
-		console.log(rooms)
 		// the rooms array contains at least the socket ID
 	});
 });
