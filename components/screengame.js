@@ -15,6 +15,9 @@ class ScreenGame extends React.Component {
   }
 
   tick(){
+    if(this.state.timer == 0){
+      return
+    }
     this.setState({
       timer: this.state.timer - 1, 
     })
@@ -24,7 +27,6 @@ class ScreenGame extends React.Component {
   componentDidMount(){
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
-      console.log(data)
       this.setState({
         text: '',
         choice: undefined,
@@ -37,6 +39,9 @@ class ScreenGame extends React.Component {
         1000
       );
     });
+    this.socket.on('choosing', (data)=>{
+      clearInterval(this.timerID);
+    })
 
     this.socket.on('choosing', (data)=>{
       this.setState({
@@ -69,7 +74,7 @@ class ScreenGame extends React.Component {
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
-              <div id="overlay" style={{opacity: "1"}}>
+              <div id="overlay" style={{opacity: this.state.text!=""?"1":"0"}}>
                 <div className="content" style={{bottom: "0%"}}>
                   {this.state.text != "" &&
                     <div className="text">
