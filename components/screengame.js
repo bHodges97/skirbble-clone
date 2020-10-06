@@ -13,6 +13,7 @@ class ScreenGame extends React.Component {
       word: '',
       reason: '',
       scores: undefined,
+      round: 0,
       timer: 80,
     };
   }
@@ -42,6 +43,13 @@ class ScreenGame extends React.Component {
       this.timerID = setInterval(
         () => this.tick(), 1000
       );
+    });
+
+    this.socket.on('round', (data)=>{
+      clearInterval(this.timerID);
+      this.setState({
+        round: data,
+      });
     });
 
     this.socket.on('end', (data)=>{
@@ -83,7 +91,7 @@ class ScreenGame extends React.Component {
           <div className="timerContainer">
             <div id="timer">{this.state.timer}</div>
           </div>
-          <div id="round">Round 1 of 3</div>
+          <div id="round">Round {this.state.round} of 3</div>
           <div id="currentWord">{this.state.word}</div>
           <div className="gameHeaderButtons"/>
         </div>

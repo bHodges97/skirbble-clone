@@ -76,9 +76,8 @@ io.on('connect', socket => {
 				socket.join(roomcode+"_");
 				console.log(player.change)
 				if(room.players.filter((x)=>x.score>0).length == room.playerCount - 1){
-					console.log("all done")
 					clearTimeout(room.timeout);
-					room.end('all correct');
+					room.end('Everybody guessed the word!');
 				}
 			}else{
 				io.to(roomcode).emit('message', {name: player.name, content: data});

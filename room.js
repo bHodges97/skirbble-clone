@@ -58,6 +58,10 @@ class Room{
 	}
 
 	selectWord(){
+		this.io.sockets.clients(this.id+'_').forEach(function(s){
+			s.leave(this.id+'_');
+		});
+
 		if(this.playerCount < 2){
 			//prevent game from playing when no one is on
 			return
@@ -138,7 +142,7 @@ class Room{
 		}
 		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word});
 		//count down 60 seconds
-		this.timer = setTimeout(()=>{this.end("timeout")}, this.drawTime * 1000);
+		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
 	}
 
 	end(reason){
