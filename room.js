@@ -1,8 +1,15 @@
 
+//TODO: 
+//handle game state if activate  player disconnects
+//save current drawing
+//ensure words chosen are unique
+//add stop game when player count is low
+
 class Room{
 	constructor(id){
 		this.id = id;
-		this.gameState = "lobby";
+		//game loop: lobby -> choice -> draw -> end
+		this.state = "lobby";
 		this.players = new Array(10);
 		this.currentPlayer = null;
 		this.word = "";
@@ -13,14 +20,13 @@ class Room{
 		this.image = "";
 		this.playerCount = 0
 		this.startTime = Date.now()
+		this.timer = null
 	}
 
 	updateStatus(){
-		if(this.gameState != "lobby" && this.playerCount == 1){
+		if(this.state != "lobby" && this.playerCount < 2){
 			//stop game
-
-
-		}else if(this.gameState == "lobby" && this.playerCount > 1){
+		}else if(this.state == "lobby" && this.playerCount > 1){
 			//start game
 			this.newRound();
 		}
@@ -48,12 +54,13 @@ class Room{
 		if(player == null){
 			newRound();
 		}else{
+			this.state = "choice";
 			//select three words
 			for(let i = 0; i < 3; i++){
 				this.choices[i] = random_item(wordlist);
 			}
 
-			this.currentPlayer = player;
+			this.currentPlayer = player.id;
 
 			io.to(this.id).emit('choosing', player.name);
 			io.to(player.id).emit('choice', this.choices);
@@ -96,11 +103,21 @@ class Room{
 
 	//game timer
 	start(){
-		this.startTime = Date.now()
+		this.startTime = Date.now();
+		this.state = "draw";
 		io.to(this.id).emit('go', {time: this.startTime, word: this.hiddenWord});
-		setTimeout(myFunc, 1500, 'funky');
+		//count down 60 seconds
+		this.timer = setTimeout(this.end, 60000);
 	}
 
+	end(){
+		//display end screen;
+		//return to choice
+		this.state = "end";
+		io.to(this.id).emit('end');
+		//wait 3 seconds and then continue game loop
+		setTimeout(this.selectWord, 3000);
+	}
 }
 
 module.exports = Room;

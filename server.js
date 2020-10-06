@@ -32,7 +32,6 @@ function validate(user){
 }
 
 rooms = new Map()
-
 room1 = new Room();
 rooms.set("room1", room1);
 
@@ -73,9 +72,7 @@ io.on('connect', socket => {
 		let room = rooms.get(roomcode);
 		let player = room.getPlayer(socket.id);
 		if(clientrooms.length == 2){
-			let guess = data.trim().toLowerCase();
-
-			if(guess == room.word){
+			if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
 				io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
 				socket.join(roomcode+"_");
 			}else{
@@ -88,7 +85,7 @@ io.on('connect', socket => {
 
 	//player chooses a word;
 	socket.on('choice', (data)=>{
-		if(!Number.isInteger(data) || data < 0  || data > 2 || clientrooms.length == 1){
+		if(!Number.isInteger(data) || room.state != 'choice' || data < 0  || data > 2 || clientrooms.length == 1){
 			socket.emit('error')
 			return
 		}
