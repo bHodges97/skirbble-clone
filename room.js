@@ -47,6 +47,8 @@ class Room{
 
 	newRound(){
 		this.round += 1;
+
+		console.log("Round: ", this.round);
 		for(let player of this.players.filter((x)=>x!=undefined)){
 			player.participated = false;
 		}
@@ -56,6 +58,10 @@ class Room{
 	}
 
 	selectWord(){
+		if(this.playerCount < 2){
+			//prevent game from playing when no one is on
+			return
+		}
 		//select player first
 		let player = null;
 		for(let p of this.players){
@@ -68,7 +74,6 @@ class Room{
 		if(player == null){
 			this.newRound();
 		}else{
-			console.log("choice for ",player.id);
 			this.state = "choice";
 			//select three words
 			for(let i = 0; i < 3; i++){
@@ -96,6 +101,7 @@ class Room{
 				this.players[i].score = 0;
 				this.players[i].id = id;
 				this.players[i].participated = false;
+				this.players[i].change = 0;
 				this.playerCount+=1
 				this.updateStatus()
 				return i
@@ -124,19 +130,29 @@ class Room{
 	start(){
 		this.startTime = Date.now();
 		this.state = "draw";
-		this.io.to(this.id).emit('secret', {time: this.startTime, word: this.hiddenWord});
+		let secret = {time: this.startTime, word: this.hiddenWord}
+		for(let x of this.players){
+			if(x!=undefined && x.id!=this.currentPlayer){
+				this.io.to(this.id).emit('secret', secret);
+			}
+		}
+		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word});
 		//count down 60 seconds
-		this.timer = setTimeout(()=>{this.end()}, this.drawTime * 1000);
+		this.timer = setTimeout(()=>{this.end("timeout")}, this.drawTime * 1000);
 	}
 
-	end(){
-		console.log("time out occured",Date.now()-this.startTime)
+	end(reason){
+		console.log(reason, Date.now()-this.startTime)
 		//display end screen;
 		//return to choice
 		this.state = "end";
-		this.io.to(this.id).emit('end');
+		//send results in descending order
+		let deltas = this.players.filter((x)=>x!=undefined).map((x)=>{return {name: x.name, change: x.change}});
+		deltas.sort((x,y)=>y.change-x.change)
+
+		this.io.to(this.id).emit('end', {reason: reason, scores: deltas ,word: this.word});
 		//wait 3 seconds and then continue game loop
-		setTimeout(()=>{this.selectWord()}, 3000);
+		setTimeout(()=>{this.selectWord()}, 15000);
 	}
 }
 

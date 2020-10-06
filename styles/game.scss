@@ -65,6 +65,13 @@
   flex-direction: column;
   justify-content: space-between;
   margin-right: 8px;
+  
+  .guessedWord:nth-child(2n+1) {
+      background: #82c669;
+  }
+  .guessedWord:nth-child(2n) {
+    background: #97d87f;
+  }
 }
 
 
@@ -261,6 +268,24 @@
         flex: 0 0 auto;
         display: flex;
         flex-direction: column;
+        
+        .player {
+          flex:0 0 auto;
+          font-size:2vw;
+          text-align:left;
+          color:#d3d3d3;
+          display:flex;
+      
+          .name{
+            flex: 1 1 auto;
+            font-weight: 700;
+          }
+
+          .score{
+            flex: 0 0 auto;
+            margin-left: 20px;
+          }
+        }
       }
 
       .gameEndContainer {

@@ -41,13 +41,23 @@ class PlayerList extends React.Component {
       }
       this.setState({players: players});
     });
+    this.socket.on('update', (data)=>{
+      let players = [... this.state.players]
+      
+      for(let i=0; i < players.length; i++){
+        if(players[i] != null && players[i].id == data.id){
+          players[i] = {...players[i], score: data.score}
+        }
+      }
+      this.setState({players: players});
+    });
   }
 
   renderPlayer(player){
     if(player !== null){
       let isCurrentPlayer = player.id==this.socket.id;
       return (
-        <div className="player" key={player.id}>
+        <div className={"player " + player.guessed} key={player.id}>
           <div className="rank">
             #1
           </div>

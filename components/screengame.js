@@ -7,9 +7,12 @@ class ScreenGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      overlay: false,
       text: '',
       choice: undefined, 
       word: '',
+      reason: '',
+      scores: undefined,
       timer: 80,
     };
   }
@@ -23,35 +26,50 @@ class ScreenGame extends React.Component {
     })
   }
 
-
   componentDidMount(){
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
       this.setState({
+        overlay: false,
         text: '',
         choice: undefined,
+        reason: '',
+        scores: undefined,
         word: data.word,
         timer: Math.floor(80 - (Date.now() - data.time) / 1000),
       })
 
       this.timerID = setInterval(
-        () => this.tick(),
-        1000
+        () => this.tick(), 1000
       );
     });
-    this.socket.on('choosing', (data)=>{
+
+    this.socket.on('end', (data)=>{
       clearInterval(this.timerID);
+      this.setState({
+        overlay: true,
+        reason: data.reason,
+        scores: data.scores,
+        text: "The word was '" + data.word + "'.",
+      })
     })
 
     this.socket.on('choosing', (data)=>{
       this.setState({
-        text: data + " is choosing a word"
+        overlay: true,
+        text: data + " is choosing a word",
+        reason: '',
+        scores: undefined,
       })
     });
+
     this.socket.on('choice', (data)=>{
       this.setState({
+        overlay: true,
         text: "Choose a word",
         choice: data,
+        reason: '',
+        scores: undefined,
       })
     });
 
@@ -74,19 +92,16 @@ class ScreenGame extends React.Component {
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
-              <div id="overlay" style={{opacity: this.state.text!=""?"1":"0"}}>
+              <div id="overlay" style={{opacity: this.state.overlay?"1":"0"}}>
                 <div className="content" style={{bottom: "0%"}}>
                   {this.state.text != "" &&
                     <div className="text">
                       {this.state.text}
                     </div>
                   }
-                  <div className="revealReason">
-                  </div>
                   {this.state.choice != undefined && 
                     <div className="wordContainer">
-                      {this.state.choice.map((x,i)=>{
-                        return (
+                      {this.state.choice.map((x,i)=>
                           <div
                             className="word"
                             key={i}
@@ -96,12 +111,25 @@ class ScreenGame extends React.Component {
                           >
                           {x}
                           </div>
-                        )
-                      })}
+                        
+                      )}
                     </div>
                   }
-                  <div className="revealContainer">
-                  </div>
+                  {this.state.reason!='' &&
+                    <div className="revealReason">
+                      {this.state.reason}
+                    </div>
+                  }
+                  {this.state.scores != undefined &&
+                    <div className="revealContainer">
+                      {this.state.scores.map((x,i)=>
+                        <div className="player" key={i}>
+                        <div className="name">{x.name}</div>
+                        <div className="score" style={{color: x.change==0?'#e81300':'#07ea30'}}>{x.change==0?x.change:'+'+x.change}</div> 
+                        </div>
+                      )}
+                    </div>
+                  }
                   <div className="gameEndContainer">
                   </div>
                 </div>

@@ -64,14 +64,22 @@ io.on('connect', socket => {
 			socket.emit('error')
 			return
 		}
-		console.log(clientrooms);
 		let roomcode = clientrooms[1]
 		let room = rooms.get(roomcode);
 		let player = room.getPlayer(socket.id);
 		if(clientrooms.length == 2){
 			if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
+				player.change = Math.floor(room.drawTime - (Date.now() - room.startTime) / 1000);
+				player.score += player.change
 				io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
+				io.to(roomcode).emit('update', {id: player.id, score:player.score});
 				socket.join(roomcode+"_");
+				console.log(player.change)
+				if(room.players.filter((x)=>x.score>0).length == room.playerCount - 1){
+					console.log("all done")
+					clearTimeout(room.timeout);
+					room.end('all correct');
+				}
 			}else{
 				io.to(roomcode).emit('message', {name: player.name, content: data});
 			}
@@ -91,7 +99,6 @@ io.on('connect', socket => {
 		let room = rooms.get(roomcode);
 		let player = room.getPlayer(socket.id);
 		if(room.state != "choice" || socket.id != room.currentPlayer){
-			console.log(room.state, socket.id, room.currentPlayer);
 			socket.emit('');
 			return;
 		}
