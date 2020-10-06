@@ -153,6 +153,10 @@ class Room{
 		this.io.to(this.id).emit('end', {reason: reason, scores: deltas ,word: this.word});
 		//wait 3 seconds and then continue game loop
 		setTimeout(()=>{this.selectWord()}, 15000);
+
+		for(let p of this.players){
+			p.delta = 0;
+		}
 	}
 }
 
