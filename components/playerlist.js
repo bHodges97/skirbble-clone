@@ -34,7 +34,7 @@ class PlayerList extends React.Component {
     this.socket.on('playerleft', (data)=>{
       let players = [... this.state.players]
       for(let i = 0;i < players.length; i++){;
-        if(players[i] != null && players[i].key == data){
+        if(players[i] != null && players[i].id == data){
           players[i] = null;
           break;
         }
@@ -45,9 +45,9 @@ class PlayerList extends React.Component {
 
   renderPlayer(player){
     if(player !== null){
-      let isCurrentPlayer = player.key==this.socket.id;
+      let isCurrentPlayer = player.id==this.socket.id;
       return (
-        <div className="player" key={player.key}>
+        <div className="player" key={player.id}>
           <div className="rank">
             #1
           </div>

@@ -82,24 +82,27 @@ io.on('connect', socket => {
 
 	//player chooses a word;
 	socket.on('choice', (data)=>{
-		if(!Number.isInteger(data) || room.state != 'choice' || data < 0  || data > 2 || clientrooms.length == 1){
-			socket.emit('error')
+		const clientrooms = Object.keys(socket.rooms);
+		if(!Number.isInteger(data) || data < 0  || data > 2 || clientrooms.length == 1){
+			socket.emit('error');
 			return
 		}
-		console.log(clientrooms);
 		let roomcode = clientrooms[1]
 		let room = rooms.get(roomcode);
 		let player = room.getPlayer(socket.id);
-		if (socket.id == room.currentPlayer){
-			room.word = room.choices[data];
-			room.hiddenWord = ''
-			for(let c of room.word){
-				room.hiddenWord += c==' '?' ':'_';
-			}
-			room.compareWord = room.displayerWord.toLowerCase();
-			room.choices = ['','',''];
-			room.start();
+		if(room.state != "choice" || socket.id != room.currentPlayer){
+			console.log(room.state, socket.id, room.currentPlayer);
+			socket.emit('');
+			return;
 		}
+		room.word = room.choices[data];
+		room.hiddenWord = ''
+		for(let c of room.word){
+			room.hiddenWord += c==' '?' ':'_';
+		}
+		room.compareWord = room.word.toLowerCase();
+		room.choices = ['','',''];
+		room.start();
 	});
 	
 	//player disconnects

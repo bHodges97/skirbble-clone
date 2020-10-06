@@ -1,7 +1,7 @@
 const wordlist = require('./words.js');
 
 //TODO: 
-//handle game state if activate  player disconnects
+//handle game state if active  player disconnects
 //save current drawing
 //ensure words chosen are unique
 //add stop game when player count is low
@@ -11,8 +11,13 @@ class Room{
 		this.id = id;
 		this.io = io;
 		//game loop: lobby -> choice -> draw -> end
-		this.state = "lobby";
 		this.players = new Array(10);
+		this.playerCount = 0;
+		this.resetState();
+	}
+
+	resetState(){
+		this.state = "lobby";
 		this.currentPlayer = null;
 		this.word = "";
 		this.hiddenWord = "";
@@ -20,14 +25,18 @@ class Room{
 		this.choices = ['','',''];
 		this.round = 0;
 		this.image = "";
-		this.playerCount = 0;
 		this.startTime = Date.now();
 		this.drawTime = 80;
+		clearTimeout(this.timeout);
 		this.timer = null;
+		for(let player of this.players.filter((x)=>x!=undefined)){
+			player.participated = false;
+		}
 	}
 
 	updateStatus(){
 		if(this.state != "lobby" && this.playerCount < 2){
+			this.resetState();
 			//stop game
 		}else if(this.state == "lobby" && this.playerCount > 1){
 			//start game
@@ -38,13 +47,12 @@ class Room{
 
 	newRound(){
 		this.round += 1;
-		for(let player of this.players){
-			if(player != undefined){
-				player.participated = false;
-			}
+		for(let player of this.players.filter((x)=>x!=undefined)){
+			player.participated = false;
 		}
 		this.io.to(this.id).emit("round", this.round);
-		this.selectWord();
+
+		this.timer = setTimeout(()=>{this.selectWord()}, 500);
 	}
 
 	selectWord(){
@@ -52,13 +60,13 @@ class Room{
 		let player = null;
 		for(let p of this.players){
 			if(p != undefined && !p.participated){
-				player = p
 				p.participated = true;
+				player = p;
 				break
 			}
 		}
 		if(player == null){
-			newRound();
+			this.newRound();
 		}else{
 			console.log("choice for ",player.id);
 			this.state = "choice";
@@ -69,18 +77,24 @@ class Room{
 			console.log(this.choices);
 
 			this.currentPlayer = player.id;
-
-			this.io.to(this.id).emit('choosing', player.name);
+			
+			for(let p of this.players){
+				if(p != undefined && p.id != player.id){
+					this.io.to(p.id).emit('choosing', player.name);
+					console.log(p.id)
+				}
+			}
 			this.io.to(player.id).emit('choice', this.choices);
 		}
 	}
-
+	
+	//on player connect to room
 	addPlayer(data, id){
 		for(let i=0;i < this.players.length; i++){
 			if(this.players[i] === undefined){
 				this.players[i] = data;
 				this.players[i].score = 0;
-				this.players[i].key = id;
+				this.players[i].id = id;
 				this.players[i].participated = false;
 				this.playerCount+=1
 				this.updateStatus()
@@ -90,16 +104,13 @@ class Room{
 	}
 
 	getPlayer(id){
-		for(let i=0; i < this.players.length; i++){
-			if(this.players[i] !== undefined && this.players[i].key == id){
-				return this.players[i];
-			}
-		}
+		return this.players.filter((x)=>x.id==id).pop()
 	}
 
+	//on player leave to room
 	removePlayer(id){
 		for(let i=0; i < this.players.length; i++){
-			if(this.players[i] !== undefined && this.players[i].key == id){
+			if(this.players[i] !== undefined && this.players[i].id == id){
 				let name = this.players[i].name
 				this.players[i] = undefined;
 				this.playerCount-=1
@@ -113,18 +124,19 @@ class Room{
 	start(){
 		this.startTime = Date.now();
 		this.state = "draw";
-		this.io.to(this.id).emit('go', {time: this.startTime, word: this.hiddenWord});
+		this.io.to(this.id).emit('secret', {time: this.startTime, word: this.hiddenWord});
 		//count down 60 seconds
-		this.timer = setTimeout(this.end, this.drawTime * 1000);
+		this.timer = setTimeout(()=>{this.end()}, this.drawTime * 1000);
 	}
 
 	end(){
+		console.log("time out occured",Date.now()-this.startTime)
 		//display end screen;
 		//return to choice
 		this.state = "end";
 		this.io.to(this.id).emit('end');
 		//wait 3 seconds and then continue game loop
-		setTimeout(this.selectWord, 3000);
+		setTimeout(()=>{this.selectWord()}, 3000);
 	}
 }
 
