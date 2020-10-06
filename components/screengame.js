@@ -23,6 +23,20 @@ class ScreenGame extends React.Component {
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
+              <div id="overlay" style={{opacity: "0%"}}>
+                <div className="content" style={{background: "0%"}}>
+                  <div className="text">
+                  </div>
+                  <div className="revealReason">
+                  </div>
+                  <div className="wordContainer">
+                  </div>
+                  <div className="revealContainer">
+                  </div>
+                  <div className="gameEndContainer">
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div id="containerSidebar">

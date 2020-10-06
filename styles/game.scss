@@ -109,6 +109,10 @@
 #boxMessages {
   height: calc(100% - 34px);
   overflow-y: auto;
+
+  div:nth-child(2n) {
+    background: #fafafa;
+  }
 }
 
 #boxChatInput {
@@ -196,3 +200,60 @@
   }
 }
 
+
+#overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    line-height: 1;
+    opacity: 0;
+    background: rgba(3,8,29,.8);
+    text-shadow: 0 0 3px #000;
+
+    .content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      bottom: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .text {
+          flex: 0 0 auto;
+          font-size: 2.2vw;
+          text-align: center;
+          color: #fff;
+          margin-bottom: 0;
+      }
+
+      .revealReason {
+        font-size: 1.5vw;
+        color: #d3d3d3;
+        margin-bottom: 20px;
+      }
+
+      .wordContainer {
+        flex: 0 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        text-shadow: 0 0 0 #000;
+      }
+
+      .revealContainer {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .gameEndContainer {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+    }
+}

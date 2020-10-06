@@ -45,10 +45,10 @@ class ChatArea extends React.Component {
               return (
                 <div key={index} style={{color: data.color}}> 
                   {data.name?
-                    <div>
+                    <>
                     <b>{data.name}: </b>
                     <span>{data.content}</span>
-                    </div>
+                    </>
                     :
                     <b>{data.content}</b>
                   }
