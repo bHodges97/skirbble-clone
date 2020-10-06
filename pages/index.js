@@ -28,7 +28,10 @@ class Home extends React.Component {
       this.setState({gameState: 'playing'})
       console.log("connected")
       window.scrollTo(0,0)
-    })
+    });
+    this.socket.on('disconnect', ()=>{
+      window.location.reload(true);
+    });
   }
 
   render(){

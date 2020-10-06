@@ -7,14 +7,11 @@ const io = socketio(server);
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const nextHandle = nextApp.getRequestHandler()
-const fs = require('fs');
 const Room = require('./room.js');
+const wordlist = require('./words.js');
 
-let wordfile = fs.readFileSync('words.json');
-const wordlist = JSON.parse(wordfile).words;
-
-function random_item(items){
-	return items[Math.floor(Math.random()*items.length)];
+Array.prototype.sample = function(){
+  return this[Math.floor(Math.random()*this.length)];
 }
 
 function validate(user){
@@ -32,7 +29,7 @@ function validate(user){
 }
 
 rooms = new Map()
-room1 = new Room();
+room1 = new Room("room1",io);
 rooms.set("room1", room1);
 
 io.on('connect', socket => {
@@ -48,7 +45,7 @@ io.on('connect', socket => {
 			return;
 		}
 		if(data.name == ""){
-			data.name = random_item(wordlist);
+			data.name = wordlist.sample();
 		}
 		let roomcode = "room1";
 		let room = rooms.get(roomcode);

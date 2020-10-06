@@ -1,3 +1,4 @@
+const wordlist = require('./words.js');
 
 //TODO: 
 //handle game state if activate  player disconnects
@@ -6,8 +7,9 @@
 //add stop game when player count is low
 
 class Room{
-	constructor(id){
+	constructor(id,io){
 		this.id = id;
+		this.io = io;
 		//game loop: lobby -> choice -> draw -> end
 		this.state = "lobby";
 		this.players = new Array(10);
@@ -18,9 +20,10 @@ class Room{
 		this.choices = ['','',''];
 		this.round = 0;
 		this.image = "";
-		this.playerCount = 0
-		this.startTime = Date.now()
-		this.timer = null
+		this.playerCount = 0;
+		this.startTime = Date.now();
+		this.drawTime = 80;
+		this.timer = null;
 	}
 
 	updateStatus(){
@@ -28,6 +31,7 @@ class Room{
 			//stop game
 		}else if(this.state == "lobby" && this.playerCount > 1){
 			//start game
+			console.log("starting");
 			this.newRound();
 		}
 	}
@@ -35,9 +39,11 @@ class Room{
 	newRound(){
 		this.round += 1;
 		for(let player of this.players){
-			player.participated = false;
+			if(player != undefined){
+				player.participated = false;
+			}
 		}
-		io.to(this.id).emit("round", this.round);
+		this.io.to(this.id).emit("round", this.round);
 		this.selectWord();
 	}
 
@@ -45,7 +51,7 @@ class Room{
 		//select player first
 		let player = null;
 		for(let p of this.players){
-			if(p.participated){
+			if(p != undefined && !p.participated){
 				player = p
 				p.participated = true;
 				break
@@ -54,16 +60,18 @@ class Room{
 		if(player == null){
 			newRound();
 		}else{
+			console.log("choice for ",player.id);
 			this.state = "choice";
 			//select three words
 			for(let i = 0; i < 3; i++){
-				this.choices[i] = random_item(wordlist);
+				this.choices[i] = wordlist.sample();
 			}
+			console.log(this.choices);
 
 			this.currentPlayer = player.id;
 
-			io.to(this.id).emit('choosing', player.name);
-			io.to(player.id).emit('choice', this.choices);
+			this.io.to(this.id).emit('choosing', player.name);
+			this.io.to(player.id).emit('choice', this.choices);
 		}
 	}
 
@@ -105,16 +113,16 @@ class Room{
 	start(){
 		this.startTime = Date.now();
 		this.state = "draw";
-		io.to(this.id).emit('go', {time: this.startTime, word: this.hiddenWord});
+		this.io.to(this.id).emit('go', {time: this.startTime, word: this.hiddenWord});
 		//count down 60 seconds
-		this.timer = setTimeout(this.end, 60000);
+		this.timer = setTimeout(this.end, this.drawTime * 1000);
 	}
 
 	end(){
 		//display end screen;
 		//return to choice
 		this.state = "end";
-		io.to(this.id).emit('end');
+		this.io.to(this.id).emit('end');
 		//wait 3 seconds and then continue game loop
 		setTimeout(this.selectWord, 3000);
 	}
