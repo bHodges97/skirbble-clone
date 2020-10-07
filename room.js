@@ -152,8 +152,14 @@ class Room{
 		//return to choice
 		this.state = "end";
 		//send results in descending order
-		let deltas = this.players.filter((x)=>x!=undefined).map((x)=>{return {name: x.name, change: x.change}});
+		let deltas = this.players.filter((x)=>x!=undefined&&x.id!=this.currentPlayer)
+									.map((x)=>{return {name: x.name, change: x.change}});
+		let drawer = this.getPlayer(this.currentPlayer).name;
+		//calculate drawer score = sum(changes) / correct guesses + 1
+		let drawerscore = Math.floor(deltas.reduce((x,y)=>x+y.change,0) / (deltas.length + 1));  
+		deltas.push({name: drawer, change: drawerscore});
 		deltas.sort((x,y)=>y.change-x.change)
+		
 
 		this.io.to(this.id).emit('end', {reason: reason, scores: deltas ,word: this.word});
 		//wait 5 seconds and then continue game loop
