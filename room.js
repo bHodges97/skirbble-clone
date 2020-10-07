@@ -27,8 +27,8 @@ class Room{
 		this.image = "";
 		this.startTime = Date.now();
 		this.drawTime = 80;
-		clearTimeout(this.timeout);
 		this.timer = null;
+		clearTimeout(this.timer);
 		for(let player of this.players.filter((x)=>x!=undefined)){
 			player.participated = false;
 		}
@@ -47,7 +47,6 @@ class Room{
 
 	newRound(){
 		this.round += 1;
-
 		console.log("Round: ", this.round);
 		for(let player of this.players.filter((x)=>x!=undefined)){
 			player.participated = false;
@@ -58,10 +57,7 @@ class Room{
 	}
 
 	selectWord(){
-		this.io.sockets.clients(this.id+'_').forEach(function(s){
-			s.leave(this.id+'_');
-		});
-
+		console.log("triggered: selectWord()");
 		if(this.playerCount < 2){
 			//prevent game from playing when no one is on
 			return
@@ -76,6 +72,7 @@ class Room{
 			}
 		}
 		if(player == null){
+			console.log("All players have particpated, starting new round");
 			this.newRound();
 		}else{
 			this.state = "choice";
@@ -132,6 +129,7 @@ class Room{
 
 	//game timer
 	start(){
+		console.log("triggered: start()");
 		this.startTime = Date.now();
 		this.state = "draw";
 		let secret = {time: this.startTime, word: this.hiddenWord}
@@ -146,7 +144,9 @@ class Room{
 	}
 
 	end(reason){
+		console.log("triggered: end()");
 		console.log(reason, Date.now()-this.startTime)
+		clearTimeout(this.timer)
 		//display end screen;
 		//return to choice
 		this.state = "end";
@@ -155,11 +155,13 @@ class Room{
 		deltas.sort((x,y)=>y.change-x.change)
 
 		this.io.to(this.id).emit('end', {reason: reason, scores: deltas ,word: this.word});
-		//wait 3 seconds and then continue game loop
-		setTimeout(()=>{this.selectWord()}, 15000);
+		//wait 5 seconds and then continue game loop
+		setTimeout(()=>{this.selectWord()}, 5000);
 
 		for(let p of this.players){
-			p.delta = 0;
+			if(p != undefined){
+				p.change = 0;
+			}
 		}
 	}
 }

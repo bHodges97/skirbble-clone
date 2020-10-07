@@ -7,55 +7,15 @@ class PlayerList extends React.Component {
     super(props);
 
     this.renderPlayer = this.renderPlayer.bind(this);
-
-    this.state = {
-      players: [],
-    };
   }
 
-  
   componentDidMount(){
-    this.socket = this.context
-    this.socket.on('players', (data)=>{
-      this.setState({players: data})
-      console.log(this.socket.id);
-      console.log(data);
-    });
-    this.socket.on('playerjoined', (data)=>{
-      let players = [... this.state.players]
-      for(let i = 0;i < players.length; i++){;
-        if(players[i] === null){
-          players[i] = data;
-          break;
-        }
-      }
-      this.setState({players: players});
-    });
-    this.socket.on('playerleft', (data)=>{
-      let players = [... this.state.players]
-      for(let i = 0;i < players.length; i++){;
-        if(players[i] != null && players[i].id == data){
-          players[i] = null;
-          break;
-        }
-      }
-      this.setState({players: players});
-    });
-    this.socket.on('update', (data)=>{
-      let players = [... this.state.players]
-      
-      for(let i=0; i < players.length; i++){
-        if(players[i] != null && players[i].id == data.id){
-          players[i] = {...players[i], score: data.score}
-        }
-      }
-      this.setState({players: players});
-    });
+    this.socket = this.context;
   }
 
   renderPlayer(player){
     if(player !== null){
-      let isCurrentPlayer = player.id==this.socket.id;
+      let isCurrentPlayer = player.id == this.socket.id;
       return (
         <div className={"player " + player.guessed} key={player.id}>
           <div className="rank">
@@ -80,7 +40,7 @@ class PlayerList extends React.Component {
     return (
       <div id="containerPlayerlist">
         <div id="containerGamePlayers">
-          {this.state.players.map((player)=>this.renderPlayer(player))}
+          {this.props.players.map((player)=>this.renderPlayer(player))}
         </div>
         <button id="votekick" className="btn btnWarning btnBlock">
           Votekick

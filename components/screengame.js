@@ -15,6 +15,7 @@ class ScreenGame extends React.Component {
       scores: undefined,
       round: 0,
       timer: 80,
+      players: [],
     };
   }
 
@@ -46,6 +47,7 @@ class ScreenGame extends React.Component {
     });
 
     this.socket.on('round', (data)=>{
+      console.log("round",data);
       clearInterval(this.timerID);
       this.setState({
         round: data,
@@ -60,6 +62,15 @@ class ScreenGame extends React.Component {
         scores: data.scores,
         text: "The word was '" + data.word + "'.",
       })
+
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        if(players[i] !== null){
+          players[i] = {...players[i], change: 0}
+          break;
+        }
+      }
+      this.setState({players: players});
     })
 
     this.socket.on('choosing', (data)=>{
@@ -80,7 +91,40 @@ class ScreenGame extends React.Component {
         scores: undefined,
       })
     });
+    
+    //player update listeners
+    this.socket.on('players', (data)=>{
+      this.setState({players: data})
+      console.log(this.socket.id);
+    });
 
+    this.socket.on('playerjoined', (data)=>{
+      let players = [... this.state.players]
+      players[data.index] = data.player;
+      this.setState({players: players});
+    });
+
+    this.socket.on('playerleft', (data)=>{
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        if(players[i] != null && players[i].id == data){
+          players[i] = null;
+          break;
+        }
+      }
+      this.setState({players: players});
+    });
+
+    this.socket.on('update', (data)=>{
+      let players = [... this.state.players]
+      
+      for(let i=0; i < players.length; i++){
+        if(players[i] != null && players[i].id == data.id){
+          players[i] = {...players[i], score: data.score, change: 1}
+        }
+      }
+      this.setState({players: players});
+    });
   }
 
 
@@ -96,7 +140,7 @@ class ScreenGame extends React.Component {
           <div className="gameHeaderButtons"/>
         </div>
         <div className="containerGame">
-          <PlayerList/>
+          <PlayerList players={this.state.players}/>
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
@@ -119,7 +163,6 @@ class ScreenGame extends React.Component {
                           >
                           {x}
                           </div>
-                        
                       )}
                     </div>
                   }

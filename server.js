@@ -49,11 +49,11 @@ io.on('connect', socket => {
 		}
 		let roomcode = "room1";
 		let room = rooms.get(roomcode);
-		let id = room.addPlayer(data, socket.id)
+		let idx = room.addPlayer(data, socket.id)
 		socket.emit('connected');
-		socket.emit('players', room.players, id);
+		socket.emit('players', room.players);
 		socket.join(roomcode);
-		socket.to(roomcode).emit('playerjoined', room.players[id]);
+		socket.to(roomcode).emit('playerjoined', {index: idx, player: room.players[idx]});
 		io.to(roomcode).emit('message', {content: data.name + " joined.", color: '#56ce27'});
 	})
 	
@@ -67,23 +67,29 @@ io.on('connect', socket => {
 		let roomcode = clientrooms[1]
 		let room = rooms.get(roomcode);
 		let player = room.getPlayer(socket.id);
-		if(clientrooms.length == 2){
-			if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
-				player.change = Math.floor(room.drawTime - (Date.now() - room.startTime) / 1000);
-				player.score += player.change
-				io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
-				io.to(roomcode).emit('update', {id: player.id, score:player.score});
-				socket.join(roomcode+"_");
-				console.log(player.change)
-				if(room.players.filter((x)=>x.score>0).length == room.playerCount - 1){
-					clearTimeout(room.timeout);
-					room.end('Everybody guessed the word!');
+
+		//if player is the drawer or has guessed correctly
+		if(room.state == 'draw' && (player.id == room.currentPlayer || player.change > 0)){
+			let message = {name: player.name, content: data, color: '#7dad3f'};
+			for(p of room.players){
+				if(p != undefined && p.change > 0){
+					io.to(p.id).emit('message', message);
 				}
-			}else{
-				io.to(roomcode).emit('message', {name: player.name, content: data});
 			}
-		}else if(clientrooms.length == 3){
-			io.to(clientrooms[2]).emit('message', {name: player.name, content: data, color: '#7dad3f'});
+		}else if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
+			//Player guessed the right word!
+			player.change = Math.floor(room.drawTime - (Date.now() - room.startTime) / 1000);
+			player.score += player.change
+			io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
+			io.to(roomcode).emit('update', {id: player.id, score:player.score});
+			console.log(player.change)
+			if(room.players.filter((x)=>x.change>0).length == room.playerCount - 1){
+				clearTimeout(room.timer);
+				room.end('Everybody guessed the word!');
+			}
+		}else{
+			//emit generic chat message
+			io.to(roomcode).emit('message', {name: player.name, content: data});
 		}
 	})
 
@@ -118,7 +124,7 @@ io.on('connect', socket => {
 		if(clientrooms.length > 1){
 			let room = rooms.get(clientrooms[1]);
 			let name = room.removePlayer(clientrooms[0]);
-			socket.to(clientrooms[1]).emit('playerleft',socket.id);
+			socket.to(clientrooms[1]).emit('playerleft', socket.id);
 			socket.to(clientrooms[1]).emit('message', {content: name + " left.", color: '#ce4f0a'});
 		}
 	});
