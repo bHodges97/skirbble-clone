@@ -41,7 +41,8 @@ class Room{
 		}else if(this.state == "lobby" && this.playerCount > 1){
 			//start game
 			console.log("starting");
-			this.newRound();
+
+			this.timer = setTimeout(()=>{this.newRound()}, 300);
 		}
 	}
 
@@ -53,7 +54,7 @@ class Room{
 		}
 		this.io.to(this.id).emit("round", this.round);
 
-		this.timer = setTimeout(()=>{this.selectWord()}, 500);
+		this.timer = setTimeout(()=>{this.selectWord()}, 300);
 	}
 
 	selectWord(){

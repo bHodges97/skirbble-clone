@@ -13,7 +13,7 @@ class ScreenGame extends React.Component {
       word: '',
       reason: '',
       scores: undefined,
-      round: 0,
+      round: 1,
       timer: 80,
       players: [],
     };
@@ -47,8 +47,6 @@ class ScreenGame extends React.Component {
     });
 
     this.socket.on('round', (data)=>{
-      console.log("round",data);
-      clearInterval(this.timerID);
       this.setState({
         round: data,
       });
