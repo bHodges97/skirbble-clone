@@ -31,6 +31,7 @@ class ScreenGame extends React.Component {
   componentDidMount(){
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
+      console.log("data",data);
       this.setState({
         overlay: false,
         text: '',
@@ -91,9 +92,8 @@ class ScreenGame extends React.Component {
     });
     
     //player update listeners
-    this.socket.on('players', (data)=>{
-      this.setState({players: data})
-      console.log(this.socket.id);
+    this.socket.on('roominfo', (data)=>{
+      this.setState({players: data.players, round: data.round})
     });
 
     this.socket.on('playerjoined', (data)=>{

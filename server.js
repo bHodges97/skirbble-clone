@@ -33,9 +33,6 @@ room1 = new Room("room1",io);
 rooms.set("room1", room1);
 
 io.on('connect', socket => {
-	socket.emit('now',{
-		message: 'message received',
-	})
 
 	//player connecting
 	socket.on('join', (data)=>{
@@ -51,7 +48,13 @@ io.on('connect', socket => {
 		let room = rooms.get(roomcode);
 		let idx = room.addPlayer(data, socket.id)
 		socket.emit('connected');
-		socket.emit('players', room.players);
+		socket.emit('roominfo', {players: room.players, round: room.round});
+		if(room.state == 'choice'){
+			socket.emit('choosing', room.currentPlayerName);
+		}else if(room.state == 'draw'){
+			console.log("this")
+			socket.emit('secret', {time: room.startTime, word: room.hiddenWord});
+		}
 		socket.join(roomcode);
 		socket.to(roomcode).emit('playerjoined', {index: idx, player: room.players[idx]});
 		io.to(roomcode).emit('message', {content: data.name + " joined.", color: '#56ce27'});

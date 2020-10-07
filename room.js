@@ -19,6 +19,7 @@ class Room{
 	resetState(){
 		this.state = "lobby";
 		this.currentPlayer = null;
+		this.currentPlayerName = '';
 		this.word = "";
 		this.hiddenWord = "";
 		this.compareWord = "";
@@ -84,6 +85,7 @@ class Room{
 			console.log(this.choices);
 
 			this.currentPlayer = player.id;
+			this.currentPlayerName = player.name;
 			
 			for(let p of this.players){
 				if(p != undefined && p.id != player.id){
@@ -112,7 +114,7 @@ class Room{
 	}
 
 	getPlayer(id){
-		return this.players.filter((x)=>x.id==id).pop()
+		return this.players.filter((x)=>x!=undefined&&x.id==id).pop()
 	}
 
 	//on player leave to room
@@ -154,7 +156,7 @@ class Room{
 		//send results in descending order
 		let deltas = this.players.filter((x)=>x!=undefined&&x.id!=this.currentPlayer)
 									.map((x)=>{return {name: x.name, change: x.change}});
-		let drawer = this.getPlayer(this.currentPlayer).name;
+		let drawer = this.currentPlayName;
 		//calculate drawer score = sum(changes) / correct guesses + 1
 		let drawerscore = Math.floor(deltas.reduce((x,y)=>x+y.change,0) / (deltas.length + 1));  
 		deltas.push({name: drawer, change: drawerscore});
