@@ -14,25 +14,23 @@ class PlayerList extends React.Component {
   }
 
   renderPlayer(player){
-    if(player !== null){
-      let isCurrentPlayer = player.id == this.socket.id;
-      return (
-        <div className={`player ${player.change>0?"guessed":"guessing"}`} key={player.id}>
-          <div className="rank">
-            #1
-          </div>
-          <div className="info">
-            <div className="name" style={{color: isCurrentPlayer && "#00f"}}>
-              {player.name} {isCurrentPlayer && " (You)"}
-            </div>
-            <div className="score">
-              Points: {player.score}
-            </div>
-          </div>
-          <Avatar scale={48} hat={player.hat} color={player.color} face={player.face}/>
+    let isCurrentPlayer = player.id == this.socket.id;
+    return (
+      <div className={`player ${player.change>0?"guessed":"guessing"}`} key={player.id}>
+        <div className="rank">
+          #1
         </div>
-      )
-    }
+        <div className="info">
+          <div className="name" style={{color: isCurrentPlayer && "#00f"}}>
+            {player.name} {isCurrentPlayer && " (You)"}
+          </div>
+          <div className="score">
+            Points: {player.score}
+          </div>
+        </div>
+        <Avatar scale={48} hat={player.hat} color={player.color} face={player.face}/>
+      </div>
+    )
   }
 
   render() {

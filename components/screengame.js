@@ -64,10 +64,8 @@ class ScreenGame extends React.Component {
 
       let players = [... this.state.players]
       for(let i = 0;i < players.length; i++){;
-        if(players[i] !== null){
-          players[i] = {...players[i], change: 0}
-          break;
-        }
+        players[i] = {...players[i], change: 0}
+        break;
       }
       this.setState({players: players});
     })
@@ -103,13 +101,7 @@ class ScreenGame extends React.Component {
     });
 
     this.socket.on('playerleft', (data)=>{
-      let players = [... this.state.players]
-      for(let i = 0;i < players.length; i++){;
-        if(players[i] != null && players[i].id == data){
-          players[i] = null;
-          break;
-        }
-      }
+      let players = this.state.players.filter(x=>x.id!=data);
       this.setState({players: players});
     });
 
@@ -117,7 +109,7 @@ class ScreenGame extends React.Component {
       let players = [... this.state.players]
       
       for(let i=0; i < players.length; i++){
-        if(players[i] != null && players[i].id == data.id){
+        if(players[i].id == data.id){
           players[i] = {...players[i], score: data.score, change: 1}
         }
       }

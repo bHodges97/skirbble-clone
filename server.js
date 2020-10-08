@@ -74,10 +74,8 @@ io.on('connect', socket => {
 		//if player is the drawer or has guessed correctly
 		if(room.state == 'draw' && (player.id == room.currentPlayer || player.change > 0)){
 			let message = {name: player.name, content: data, color: '#7dad3f'};
-			for(p of room.players){
-				if(p != undefined && p.change > 0){
-					io.to(p.id).emit('message', message);
-				}
+			for(p of room.players.filter(x=>x.change>0)){
+				io.to(p.id).emit('message', message);
 			}
 		}else if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
 			//Player guessed the right word!

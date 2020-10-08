@@ -11,7 +11,7 @@ class Room{
 		this.id = id;
 		this.io = io;
 		//game loop: lobby -> choice -> draw -> end
-		this.players = new Array(10);
+		this.players = [];
 		this.playerCount = 0;
 		this.resetState();
 	}
@@ -30,7 +30,8 @@ class Room{
 		this.drawTime = 80;
 		this.timer = null;
 		clearTimeout(this.timer);
-		for(let player of this.players.filter((x)=>x!=undefined)){
+
+		for(let player of this.players){
 			player.participated = false;
 		}
 	}
@@ -50,7 +51,7 @@ class Room{
 	newRound(){
 		this.round += 1;
 		console.log("Round: ", this.round);
-		for(let player of this.players.filter((x)=>x!=undefined)){
+		for(let player of this.players){
 			player.participated = false;
 		}
 		this.io.to(this.id).emit("round", this.round);
@@ -67,7 +68,7 @@ class Room{
 		//select player first
 		let player = null;
 		for(let p of this.players){
-			if(p != undefined && !p.participated){
+			if(!p.participated){
 				p.participated = true;
 				player = p;
 				break
@@ -88,7 +89,7 @@ class Room{
 			this.currentPlayerName = player.name;
 			
 			for(let p of this.players){
-				if(p != undefined && p.id != player.id){
+				if(p.id != player.id){
 					this.io.to(p.id).emit('choosing', player.name);
 					console.log(p.id)
 				}
@@ -99,31 +100,29 @@ class Room{
 	
 	//on player connect to room
 	addPlayer(data, id){
-		for(let i=0;i < this.players.length; i++){
-			if(this.players[i] === undefined){
-				this.players[i] = data;
-				this.players[i].score = 0;
-				this.players[i].id = id;
-				this.players[i].participated = false;
-				this.players[i].change = 0;
-				this.playerCount+=1
-				this.updateStatus()
-				return i
-			}
+		if(this.players.length < 10){
+			data.score = 0;
+			data.id = id;
+			data.participated = false;
+			data.change = 0;
+			this.players.push(data);
+			this.playerCount = this.players.length
+			this.updateStatus()
+			return this.playerCount - 1
 		}
 	}
 
 	getPlayer(id){
-		return this.players.filter((x)=>x!=undefined&&x.id==id).pop()
+		return this.players.filter(x=>x.id==id).pop()
 	}
 
 	//on player leave to room
 	removePlayer(id){
 		for(let i=0; i < this.players.length; i++){
-			if(this.players[i] !== undefined && this.players[i].id == id){
+			if(this.players[i].id == id){
 				let name = this.players[i].name
-				this.players[i] = undefined;
-				this.playerCount-=1
+				this.players.splice(i,1);
+				this.playerCount = this.players.length;
 				this.updateStatus()
 				return name;
 			}
@@ -137,7 +136,7 @@ class Room{
 		this.state = "draw";
 		let secret = {time: this.startTime, word: this.hiddenWord}
 		for(let x of this.players){
-			if(x!=undefined && x.id!=this.currentPlayer){
+			if(x.id!=this.currentPlayer){
 				this.io.to(this.id).emit('secret', secret);
 			}
 		}
@@ -155,7 +154,7 @@ class Room{
 		//return to choice
 		this.state = "end";
 		//send results in descending order
-		let deltas = this.players.filter((x)=>x!=undefined&&x.id!=this.currentPlayer)
+		let deltas = this.players.filter((x)=>x.id!=this.currentPlayer)
 									.map((x)=>{return {name: x.name, change: x.change}});
 		let drawer = this.currentPlayName;
 		//calculate drawer score = sum(changes) / correct guesses + 1
@@ -169,9 +168,7 @@ class Room{
 		setTimeout(()=>{this.selectWord()}, 5000);
 
 		for(let p of this.players){
-			if(p != undefined){
-				p.change = 0;
-			}
+			p.change = 0;
 		}
 	}
 }
