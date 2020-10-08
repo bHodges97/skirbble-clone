@@ -17,7 +17,7 @@ class PlayerList extends React.Component {
     if(player !== null){
       let isCurrentPlayer = player.id == this.socket.id;
       return (
-        <div className={"player " + player.guessed} key={player.id}>
+        <div className={`player ${player.change>0?"guessed":"guessing"}`} key={player.id}>
           <div className="rank">
             #1
           </div>
@@ -39,7 +39,7 @@ class PlayerList extends React.Component {
 
     return (
       <div id="containerPlayerlist">
-        <div id="containerGamePlayers">
+        <div className="containerGamePlayers">
           {this.props.players.map((player)=>this.renderPlayer(player))}
         </div>
         <button id="votekick" className="btn btnWarning btnBlock">

@@ -142,6 +142,7 @@ class Room{
 			}
 		}
 		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word});
+		this.io.to(this.id).emit('message', {content: this.currentPlayerName + " is now drawing!", color: '#3975ce'});
 		//count down 60 seconds
 		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
 	}

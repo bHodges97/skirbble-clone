@@ -15,7 +15,7 @@ class Avatar extends React.Component {
 
   render() {
     return (
-      <div className={"avatar "+this.props.style}>
+      <div className={`avatar ${this.props.style!=undefined?this.props.style:""}`}>
         <div className="colors" style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.color)}}/>
         <div className="faces " style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.face)}}/>
         <div className="hats  " style={{"backgroundSize": this.state.bgSize, "backgroundPosition": this.getOffset(this.props.hat)}}/>

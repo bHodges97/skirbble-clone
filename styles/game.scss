@@ -65,15 +65,7 @@
   flex-direction: column;
   justify-content: space-between;
   margin-right: 8px;
-  
-  .guessedWord:nth-child(2n+1) {
-      background: #82c669;
-  }
-  .guessedWord:nth-child(2n) {
-    background: #97d87f;
-  }
 }
-
 
 #containerBoard {
   flex: 1 1 auto;
@@ -136,30 +128,29 @@
   border-radius: 2px;
 }
 
-#containerGamePlayers {
+.containerGamePlayers {
   display: flex;
   flex-direction: column;
   align-content: flex-start;
   width: 200px;
 
-  .player:first-child {
-    border-radius: 2px 2px 0 0;
+  .guessed {
+    &:nth-child(2n+1) {
+      background: #82c669;
+    }
+    &:nth-child(2n) {
+      background: #97d87f;
+    }
   }
 
-  .player:only-child {
-    border-radius: 2px;
-  }
-
-  .player:last-child {
-    border-radius: 0 0 2px 2px;
-  }
-
-  .player:nth-child(2n+1) {
-    background: #eee;
-  }
-
-  .player:nth-child(2n) {
+  .guessing{
+    &:nth-child(2n) {
       background: #fafafa;
+    }
+
+    &:nth-child(2n+1) {
+      background: #eee;
+    }
   }
 
   .player {
@@ -169,6 +160,18 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+
+    &:first-child {
+      border-radius: 2px 2px 0 0;
+    }
+
+    &:only-child {
+      border-radius: 2px;
+    }
+
+    &:last-child {
+      border-radius: 0 0 2px 2px;
+    }
 
     .info {
       flex: 1 1 auto;
