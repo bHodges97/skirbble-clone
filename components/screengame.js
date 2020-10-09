@@ -1,6 +1,7 @@
 import Canvas from "./canvas"
 import PlayerList from "./playerlist"
 import ChatArea from "./chatarea"
+import Toolbox from "./toolbox"
 import SocketContext from "components/socketcontext"
 
 class ScreenGame extends React.Component {
@@ -175,6 +176,7 @@ class ScreenGame extends React.Component {
                   </div>
                 </div>
               </div>
+              <Toolbox/>
             </div>
           </div>
           <div id="containerSidebar">
