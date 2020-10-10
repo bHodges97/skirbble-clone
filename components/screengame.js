@@ -51,6 +51,8 @@ class ScreenGame extends React.Component {
     this.socket.on('round', (data)=>{
       this.setState({
         round: data,
+        overlay: true,
+        text: "Round: " + data,
       });
     });
 
