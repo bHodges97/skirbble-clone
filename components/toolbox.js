@@ -64,6 +64,7 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerClearCanvas">
+          <div className="buttonClearCanvas"/>
         </div>
       </div>
     )
