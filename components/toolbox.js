@@ -20,7 +20,6 @@ class Toolbox extends React.Component {
   render() {
     return (
       <div className="containerToolbar">
-        Hello world?
         <div className="colorPreview">
         </div>
         <div className="containerColorbox">
@@ -43,6 +42,26 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerBrushSizes">
+          <div className="brushSize">
+            <div className="sizeCenter">
+              <div className="size size6"/>
+            </div>
+          </div>
+          <div className="brushSize">
+            <div className="sizeCenter">
+              <div className="size size16"/>
+            </div>
+          </div>
+          <div className="brushSize">
+            <div className="sizeCenter">
+              <div className="size size30"/>
+            </div>
+          </div>
+          <div className="brushSize">
+            <div className="sizeCenter">
+              <div className="size size44"/>
+            </div>
+          </div>
         </div>
         <div className="containerClearCanvas">
         </div>

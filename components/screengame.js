@@ -139,8 +139,8 @@ class ScreenGame extends React.Component {
             <div id="containerCanvas">
               <Canvas/>
               <Overlay overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
-              <Toolbox/>
             </div>
+            <Toolbox/>
           </div>
           <div id="containerSidebar">
             <div id="containerFreespace"/>
