@@ -46,6 +46,10 @@ io.on('connect', socket => {
 		}
 		let roomcode = "room1";
 		let room = rooms.get(roomcode);
+		if (room.players.some(e => e.id === socket.id)) {
+			//block player joining twice
+			return
+		}
 		let idx = room.addPlayer(data, socket.id)
 		socket.emit('connected');
 		socket.emit('roominfo', {players: room.players, round: room.round});
