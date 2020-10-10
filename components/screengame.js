@@ -2,6 +2,7 @@ import Canvas from "./canvas"
 import PlayerList from "./playerlist"
 import ChatArea from "./chatarea"
 import Toolbox from "./toolbox"
+import Overlay from "./overlay"
 import SocketContext from "components/socketcontext"
 
 class ScreenGame extends React.Component {
@@ -137,47 +138,7 @@ class ScreenGame extends React.Component {
           <div id="containerBoard">
             <div id="containerCanvas">
               <Canvas/>
-              <div id="overlay" style={{opacity: this.state.overlay?"1":"0"}}>
-                <div className="content" style={{bottom: "0%"}}>
-                  {this.state.text != "" &&
-                    <div className="text">
-                      {this.state.text}
-                    </div>
-                  }
-                  {this.state.choice != undefined && 
-                    <div className="wordContainer">
-                      {this.state.choice.map((x,i)=>
-                          <div
-                            className="word"
-                            key={i}
-                            onClick={()=>{
-                              this.socket.emit('choice',i);
-                            }}
-                          >
-                          {x}
-                          </div>
-                      )}
-                    </div>
-                  }
-                  {this.state.reason!='' &&
-                    <div className="revealReason">
-                      {this.state.reason}
-                    </div>
-                  }
-                  {this.state.scores != undefined &&
-                    <div className="revealContainer">
-                      {this.state.scores.map((x,i)=>
-                        <div className="player" key={i}>
-                        <div className="name">{x.name}</div>
-                        <div className="score" style={{color: x.change==0?'#e81300':'#07ea30'}}>{x.change==0?x.change:'+'+x.change}</div> 
-                        </div>
-                      )}
-                    </div>
-                  }
-                  <div className="gameEndContainer">
-                  </div>
-                </div>
-              </div>
+              <Overlay overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
               <Toolbox/>
             </div>
           </div>
