@@ -32,13 +32,13 @@ class Toolbox extends React.Component {
         </div>
         <div className="containerTools">
           <div className="tool">
-            <img className="toolIcon" src="/pen.gif"/>
+            <img className="toolIcon" src="/pen.png"/>
           </div>
           <div className="tool">
-            <img className="toolIcon" src="/rubber.gif"/>
+            <img className="toolIcon" src="/rubber.png"/>
           </div>
           <div className="tool">
-            <img className="toolIcon" src="/fillTool.gif"/>
+            <img className="toolIcon" src="/filltool.png"/>
           </div>
         </div>
         <div className="containerBrushSizes">

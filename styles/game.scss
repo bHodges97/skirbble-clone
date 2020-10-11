@@ -376,6 +376,42 @@
     position: absolute;
     left: 24px;
     top: 24px;
+    position: absolute;
+    background-color: #000;
+  }
+
+  .size {
+    position: absolute;
+    background-color: #000;
+  }
+
+  .size6 {
+    left: -3px;
+    top: -3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+  }
+  .size16 {
+    left: -8px;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+  }
+  .size30 {
+    left: -15px;
+    top: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+  }
+  .size44 {
+    left: -22px;
+    top: -22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
   }
 }
 
@@ -390,8 +426,6 @@
     background-position: center;
     background-repeat: no-repeat;
     cursor: pointer;
-    opacity: .6;
-    filter: alpha(opacity=60);
   }
 }
 
