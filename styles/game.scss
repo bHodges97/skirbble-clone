@@ -334,10 +334,6 @@
   display: flex;
   margin-right: 8px;
 
-  .toolActive {
-    background-color: #9664c8;
-    filter: none;
-  }
 
   .tool {
     cursor: pointer;
@@ -355,6 +351,11 @@
     .toolIcon, body {
       image-rendering: pixelated;
     }
+  }
+
+  .toolActive {
+    background-color: #9664c8;
+    filter: none;
   }
 }
 

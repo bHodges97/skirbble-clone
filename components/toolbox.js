@@ -31,7 +31,7 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerTools">
-          <div className="tool">
+          <div className="tool toolActive">
             <img className="toolIcon" src="/pen.png"/>
           </div>
           <div className="tool">
