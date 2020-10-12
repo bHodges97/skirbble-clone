@@ -126,7 +126,7 @@ class ScreenGame extends React.Component {
   }
 
   toolSelect(e){
-    this.setState({[e.target.dataset.type]: e.target.dataset.value})
+    this.setState({[e.dataset.type]: e.dataset.value})
   }
 
   render() {
