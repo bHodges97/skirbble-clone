@@ -11,13 +11,17 @@ class Canvas extends React.Component {
     this.x = 0;
     this.y = 0;
     this.isDrawing = false;
+    this.isInside = false;
+    this.state = {context: null};
   }
 
   componentDidMount() {
     const ref = this.canvasRef.current;
     ref.width = ref.offsetWidth;
     ref.height = ref.offsetHeight;
-    this.context = ref.getContext('2d');
+    //why is react like this????
+    //ctx is not defined if i just do this.context = ....
+    this.setState({context: ref.getContext('2d')});
   }
 
 
@@ -45,12 +49,14 @@ class Canvas extends React.Component {
   }
 
   drawLine(x1, y1, x2, y2) {
-    const ctx = this.context;
-    ctx.strokeRect(0, 0, 150, 150);
+    if(!this.isInside || !this.state.context)return;
+
+    const ctx = this.state.context;
 
     ctx.beginPath();
     //ctx.strokeStyle = 'black';
     ctx.lineWidth = 10;
+    ctx.lineJoin = 'round';
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.closePath();
@@ -59,7 +65,7 @@ class Canvas extends React.Component {
 
   render() {
     return (
-      <canvas className="doodleArea" ref={this.canvasRef} width="800" height="600" onMouseDown={this.mouseDown} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseLeave={()=>this.isDrawing=false}>
+      <canvas className="doodleArea" ref={this.canvasRef} width="800" height="600" onMouseDown={this.mouseDown} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseLeave={()=>this.isInside=false} onMouseEnter={()=>this.isInside=true}>
       </canvas>
     );
   }
