@@ -18,7 +18,11 @@ class ScreenGame extends React.Component {
       round: 1,
       timer: 80,
       players: [],
+      color: 'black',
+      tool: 'pen',
+      width: 6,
     };
+    this.toolSelect = this.toolSelect.bind(this);
   }
 
   tick(){
@@ -121,6 +125,9 @@ class ScreenGame extends React.Component {
     });
   }
 
+  toolSelect(e){
+    this.setState({[e.target.dataset.type]: e.target.dataset.value})
+  }
 
   render() {
     return (
@@ -137,12 +144,12 @@ class ScreenGame extends React.Component {
           <PlayerList players={this.state.players}/>
           <div id="containerBoard">
             <div id="containerCanvas">
-              <Canvas/>
+              <Canvas color={this.state.color} tool={this.state.tool} width={this.state.width}/>
               {this.state.overlay &&
               <Overlay overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
               }
             </div>
-            <Toolbox/>
+            <Toolbox callback={this.toolSelect}/>
           </div>
           <div id="containerSidebar">
             <div id="containerFreespace"/>

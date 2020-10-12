@@ -40,7 +40,7 @@ class Canvas extends React.Component {
   }
 
   mouseUp(e) {
-    if (this.isDrawing) {
+    if (this.isDrawing && this.props.tool!=='fill') {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = 0;
       this.y = 0;
@@ -54,8 +54,8 @@ class Canvas extends React.Component {
     const ctx = this.state.context;
 
     ctx.beginPath();
-    //ctx.strokeStyle = 'black';
-    ctx.lineWidth = 10;
+    ctx.strokeStyle = this.props.tool==='pen'?this.props.color:'white';
+    ctx.lineWidth = this.props.width;
     ctx.lineJoin = 'round';
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
