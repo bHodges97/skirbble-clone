@@ -3,36 +3,66 @@ import React from "react"
 class Canvas extends React.Component {
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this); 
+    this.canvasRef = React.createRef();
+    this.mouseDown = this.mouseDown.bind(this); 
+    this.mouseUp = this.mouseUp.bind(this); 
+    this.mouseMove = this.mouseMove.bind(this); 
+    this.drawLine = this.drawLine.bind(this); 
+    this.x = 0;
+    this.y = 0;
+    this.isDrawing = false;
   }
 
-  handleClick(e) {
-    this.setState(state => ({}));  
-    const ctx = e.target.getContext('2d');
-    // Set line width
-    ctx.lineWidth = 10;
+  componentDidMount() {
+    const ref = this.canvasRef.current;
+    ref.width = ref.offsetWidth;
+    ref.height = ref.offsetHeight;
+    this.context = ref.getContext('2d');
+  }
 
-    // Wall
-    ctx.strokeRect(75, 140, 150, 110);
 
-    // Door
-    ctx.fillRect(130, 190, 40, 60);
+  mouseDown(e) {
+    this.x = e.nativeEvent.offsetX;
+    this.y = e.nativeEvent.offsetY;
+    this.isDrawing = true;
+  }
 
-    // Roof
+  mouseMove(e) {
+    if (this.isDrawing === true) {
+      this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+      this.x = e.nativeEvent.offsetX;
+      this.y = e.nativeEvent.offsetY;
+    }
+  }
+
+  mouseUp(e) {
+    if (this.isDrawing) {
+      this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+      this.x = 0;
+      this.y = 0;
+      this.isDrawing = false;
+    }
+  }
+
+  drawLine(x1, y1, x2, y2) {
+    const ctx = this.context;
+    ctx.strokeRect(0, 0, 150, 150);
+
     ctx.beginPath();
-    ctx.moveTo(50, 140);
-    ctx.lineTo(150, 60);
-    ctx.lineTo(250, 140);
+    //ctx.strokeStyle = 'black';
+    ctx.lineWidth = 10;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
     ctx.closePath();
     ctx.stroke();
   }
+
   render() {
     return (
-      <canvas className="doodleArea" width="800" height="600" onClick={(e)=>this.handleClick(e)}>
+      <canvas className="doodleArea" ref={this.canvasRef} width="800" height="600" onMouseDown={this.mouseDown} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseLeave={()=>this.isDrawing=false}>
       </canvas>
     );
   }
 }
 
 export default Canvas
-
