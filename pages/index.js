@@ -30,7 +30,7 @@ class Home extends React.Component {
       window.scrollTo(0,0)
     });
     this.socket.on('disconnect', ()=>{
-      window.location.reload(true);
+      window.location.reload(false);
     });
   }
 

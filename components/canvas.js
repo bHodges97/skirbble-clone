@@ -32,33 +32,37 @@ class Canvas extends React.Component {
     let ctx = ref.getContext('2d');
     let scaleX = ref.width/ref.offsetWidth; 
     let scaleY = ref.height/ref.offsetHeight;
-    this.setState({context: ctx, scaleX: this.scaleX, scaleY: this.scaleY});
-    //ctx.scale(scaleX,scaleY);
-
     ref.width = ref.offsetWidth;
     ref.height = ref.offsetHeight;
-
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'square';
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     //why is react like this????
     //ctx is not defined if i just do this.context = ....
+    this.setState({context: ctx, scaleX: this.scaleX, scaleY: this.scaleY});
+
+    ctx.lineJoin = 'round';
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.canvas = document.createElement("canvas");
+    this.canvas.height = ref.height
+    this.canvas.width = ref.width
+    const ctx2 = this.canvas.getContext('2d');
+    ctx2.lineJoin = 'round';
+    ctx2.fillStyle = 'white';
+    this.setState({ctx2: ctx2});
   }
 
-
   mouseDown(e) {
-    if(this.state.tool == 'pen') {
+    if(e.button!=0)return
+    if(this.state.tool != 'fill') {
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
       this.isDrawing = true;
-    }else if(this.state.tool == 'fill') {
+    }else {
       this.floodFill(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     }
   }
 
   mouseMove(e) {
-    if (this.isDrawing === true && this.state.tool == 'pen') {
+    if (this.isDrawing === true && this.state.tool !== 'fill') {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
@@ -74,18 +78,43 @@ class Canvas extends React.Component {
     }
   }
 
-  drawLine(x1, y1, x2, y2) {
-    if(!this.isInside || !this.state.context)return;
-
+  drawLine(x0,y0,x1,y1){
     const ctx = this.state.context;
+    const ctx2 = this.state.ctx2;
+    let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+    let data = image.data
+    let w = this.state.width
+    let height = image.height
+    let width = image.width
+    let color = this.state.tool==='pen'?this.state.color:'#ffffff';
+    ctx2.fillStyle = 'white'
+    ctx2.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx2.beginPath();
+    ctx2.strokeStyle = color;
+    ctx2.lineWidth = w;
+    ctx2.moveTo(x0, y0);
+    ctx2.lineTo(x1, y1);
+    ctx2.closePath();
+    ctx2.stroke();
+    let image2 = ctx2.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+    let d2 = image2.data
 
-    ctx.beginPath();
-    ctx.strokeStyle = this.state.tool==='pen'?this.state.color:'white';
-    ctx.lineWidth = this.state.width;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.closePath();
-    ctx.stroke();
+    let lx = Math.min(0, Math.min(x0,x1)-w)
+    let ly = Math.min(0, Math.min(y0,y1)-w)
+    let min = 4 * (lx + ly * width)
+    let hx = Math.max(width, Math.max(x0,x1)+w)
+    let hy = Math.max(height, Math.max(y0,y1)+w)
+    let max = 4 * (hx + hy * width)
+
+    let newColor = this.hexToRgb(color);
+    for(let x = min; x <= max; x+=4){
+      if(d2[x+3]){
+        data[x] = newColor[0]
+        data[x+1] = newColor[1]
+        data[x+2] = newColor[2]
+      }
+    }
+    ctx.putImageData(image,0,0);
   }
 
   hexToRgb(hex) {
@@ -109,12 +138,11 @@ class Canvas extends React.Component {
     let rowWidth = width * 4;
     let queue = [target]
     const comp = (x)=>{
-      return data[x]==oldColor[0] && data[x+1]==oldColor[1] && data[x+2]==oldColor[2]
+      return (data[x]==oldColor[0] && data[x+1]==oldColor[1] && data[x+2]==oldColor[2]) || data[x+3] < 255
     }
 
     if(!comp(target))return;
     if(data[target] == newColor[0] && data[target+1] == newColor[1] && data[target+2] == newColor[2])return;
-    console.log(newColor);
 
     while(queue.length > 0) {
       let next = queue.pop();
