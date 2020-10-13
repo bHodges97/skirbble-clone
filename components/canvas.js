@@ -83,6 +83,8 @@ class Canvas extends React.Component {
   drawLine(x0,y0,x1,y1){
     const ctx = this.state.context;
     const ctx2 = this.state.ctx2;
+    //draw line on hidden canvas as a mask for the actual canvas.
+    //gets rid of fuzzy edges 
     let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
     let data = image.data
     let w = this.state.width
@@ -99,11 +101,11 @@ class Canvas extends React.Component {
     let image2 = ctx2.getImageData(0,0,width,height);
     let d2 = image2.data
 
-    let lx = Math.min(0, Math.min(x0,x1)-w)
-    let ly = Math.min(0, Math.min(y0,y1)-w)
+    let lx = Math.max(0, Math.min(x0,x1)-w)
+    let ly = Math.max(0, Math.min(y0,y1)-w)
     let min = 4 * (lx + ly * width)
-    let hx = Math.max(width, Math.max(x0,x1)+w)
-    let hy = Math.max(height, Math.max(y0,y1)+w)
+    let hx = Math.min(width, Math.max(x0,x1)+w)
+    let hy = Math.min(height, Math.max(y0,y1)+w)
     let max = 4 * (hx + hy * width)
 
     let newColor = this.hexToRgb(color);
@@ -114,6 +116,7 @@ class Canvas extends React.Component {
         data[x+2] = newColor[2]
       }
     }
+
     ctx.putImageData(image,0,0);
   }
 
