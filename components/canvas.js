@@ -75,6 +75,8 @@ class Canvas extends React.Component {
       this.x = 0;
       this.y = 0;
       this.isDrawing = false;
+      const ctx2 = this.state.ctx2;
+      ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
     }
   }
 
@@ -87,8 +89,6 @@ class Canvas extends React.Component {
     let height = image.height
     let width = image.width
     let color = this.state.tool==='pen'?this.state.color:'#ffffff';
-    ctx2.fillStyle = 'white'
-    ctx2.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx2.beginPath();
     ctx2.strokeStyle = color;
     ctx2.lineWidth = w;
@@ -96,7 +96,7 @@ class Canvas extends React.Component {
     ctx2.lineTo(x1, y1);
     ctx2.closePath();
     ctx2.stroke();
-    let image2 = ctx2.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
+    let image2 = ctx2.getImageData(0,0,width,height);
     let d2 = image2.data
 
     let lx = Math.min(0, Math.min(x0,x1)-w)
