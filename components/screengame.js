@@ -1,8 +1,6 @@
 import Canvas from "./canvas"
 import PlayerList from "./playerlist"
 import ChatArea from "./chatarea"
-import Toolbox from "./toolbox"
-import Overlay from "./overlay"
 import SocketContext from "components/socketcontext"
 
 class ScreenGame extends React.Component {
@@ -18,11 +16,7 @@ class ScreenGame extends React.Component {
       round: 1,
       timer: 80,
       players: [],
-      color: 'black',
-      tool: 'pen',
-      width: 6,
     };
-    this.toolSelect = this.toolSelect.bind(this);
   }
 
   tick(){
@@ -125,10 +119,6 @@ class ScreenGame extends React.Component {
     });
   }
 
-  toolSelect(e){
-    this.setState({[e.dataset.type]: e.dataset.value})
-  }
-
   render() {
     return (
       <div className="screenGame">
@@ -142,15 +132,7 @@ class ScreenGame extends React.Component {
         </div>
         <div className="containerGame">
           <PlayerList players={this.state.players}/>
-          <div id="containerBoard">
-            <div id="containerCanvas">
-              <Canvas color={this.state.color} tool={this.state.tool} width={this.state.width}/>
-              {this.state.overlay &&
-              <Overlay overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
-              }
-            </div>
-            <Toolbox callback={this.toolSelect}/>
-          </div>
+          <Canvas overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
           <div id="containerSidebar">
             <div id="containerFreespace"/>
             <ChatArea/>
