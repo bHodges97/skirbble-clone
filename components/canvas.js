@@ -21,30 +21,44 @@ class Canvas extends React.Component {
       width: 6,
     };
     this.toolSelect = this.toolSelect.bind(this);
+    this.floodFill = this.floodFill.bind(this);
     this.clear = this.clear.bind(this);
   }
 
   componentDidMount() {
     const ref = this.canvasRef.current;
+    //ref.width = ref.offsetWidth;
+    //ref.height = ref.offsetHeight;
+    let ctx = ref.getContext('2d');
+    let scaleX = ref.width/ref.offsetWidth; 
+    let scaleY = ref.height/ref.offsetHeight;
+    this.setState({context: ctx, scaleX: this.scaleX, scaleY: this.scaleY});
+    //ctx.scale(scaleX,scaleY);
+
     ref.width = ref.offsetWidth;
     ref.height = ref.offsetHeight;
-    let ctx = ref.getContext('2d');
+
     ctx.lineJoin = 'round';
+    ctx.lineCap = 'square';
     ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     //why is react like this????
     //ctx is not defined if i just do this.context = ....
-    this.setState({context: ctx});
   }
 
 
   mouseDown(e) {
-    this.x = e.nativeEvent.offsetX;
-    this.y = e.nativeEvent.offsetY;
-    this.isDrawing = true;
+    if(this.state.tool == 'pen') {
+      this.x = e.nativeEvent.offsetX;
+      this.y = e.nativeEvent.offsetY;
+      this.isDrawing = true;
+    }else if(this.state.tool == 'fill') {
+      this.floodFill(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    }
   }
 
   mouseMove(e) {
-    if (this.isDrawing === true) {
+    if (this.isDrawing === true && this.state.tool == 'pen') {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
@@ -75,43 +89,60 @@ class Canvas extends React.Component {
   }
 
   hexToRgb(hex) {
-    var bigint = parseInt(hex, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
+    var r = parseInt(hex.slice(1,3),16);
+    var g = parseInt(hex.slice(3,5),16);
+    var b = parseInt(hex.slice(5,7),16);
     return [r,g,b];
   }
 
   floodFill(x,y) {
     const ctx = this.state.context;
+
     let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
     //data is 1d array of rgba valuess
     let data = image.data;
     let width = image.width;
     let height = image.height;
     let target = 4*(x+y*width)
-    let newColor = hexToRgb(this.state.color);
-    let oldColor = data.slice(x,3)
+    let newColor = this.hexToRgb(this.state.color);
+    let oldColor = data.slice(target,target+3);
+    let rowWidth = width * 4;
     let queue = [target]
-    const comp = (x)=>{data[x]==oldColor[0] && data[x+1]==oldColor[1] && data[x+2]==oldColor[2]}
+    const comp = (x)=>{
+      return data[x]==oldColor[0] && data[x+1]==oldColor[1] && data[x+2]==oldColor[2]
+    }
 
-    while(queue.length) {
-      let next = queue.pop()
-      let c = next;
-      while(c >= 0 && c < data.length && comp[c]){
-        data.splice(c,3,...newColor);
-        next.push(c+width);
-        next.push(c-width);
-        c+=4;
+    if(!comp(target))return;
+    if(data[target] == newColor[0] && data[target+1] == newColor[1] && data[target+2] == newColor[2])return;
+    console.log(newColor);
+
+    while(queue.length > 0) {
+      let next = queue.pop();
+      if(!comp(next))continue;
+
+      let left = (Math.floor(next/rowWidth)) * rowWidth;
+      let right = left + rowWidth;
+
+      let e = next;
+      while(e < right && comp(e)){
+        data[e] = newColor[0];
+        data[e+1] = newColor[1];
+        data[e+2] = newColor[2];
+        if(comp(e+rowWidth))queue.push(e+rowWidth);
+        if(comp(e-rowWidth))queue.push(e-rowWidth);
+        e+=4;
       }
-      c = next-4;
-      while(c >= 0 && c < data.length && comp[c]){
-        data.splice(c,3,...newColor);
-        next.push(c+width);
-        next.push(c-width);
-        c-=4;
+      let w = next-4;
+      while(w >= left && comp(w)){
+        data[w] = newColor[0];
+        data[w+1] = newColor[1];
+        data[w+2] = newColor[2];
+        if(comp(w+rowWidth))queue.push(w+rowWidth);
+        if(comp(w-rowWidth))queue.push(w-rowWidth);
+        w-=4;
       }
     }
+    ctx.putImageData(image,0,0);
   }
 
   toolSelect(e){
