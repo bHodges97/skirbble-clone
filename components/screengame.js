@@ -16,6 +16,7 @@ class ScreenGame extends React.Component {
       round: 1,
       timer: 80,
       players: [],
+      drawing: false,
     };
   }
 
@@ -40,6 +41,7 @@ class ScreenGame extends React.Component {
         scores: undefined,
         word: data.word,
         timer: Math.floor(80 - (Date.now() - data.time) / 1000),
+        drawing: data.word[0] !== '_',
       })
 
       this.timerID = setInterval(
@@ -132,7 +134,7 @@ class ScreenGame extends React.Component {
         </div>
         <div className="containerGame">
           <PlayerList players={this.state.players}/>
-          <Canvas overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores}/>
+          <Canvas overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores} drawing={this.state.drawing}/>
           <div id="containerSidebar">
             <div id="containerFreespace"/>
             <ChatArea/>

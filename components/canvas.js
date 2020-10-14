@@ -51,7 +51,7 @@ class Canvas extends React.Component {
   }
 
   mouseDown(e) {
-    if(e.button!=0)return
+    if(e.button!=0 || !this.props.drawing)return
     if(this.state.tool != 'fill') {
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
@@ -62,7 +62,7 @@ class Canvas extends React.Component {
   }
 
   mouseMove(e) {
-    if (this.isDrawing === true && this.state.tool !== 'fill') {
+    if (this.props.drawing && this.isDrawing === true && this.state.tool !== 'fill') {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
@@ -70,7 +70,7 @@ class Canvas extends React.Component {
   }
 
   mouseUp(e) {
-    if (this.isDrawing && this.state.tool!=='fill') {
+    if (this.props.drawing && this.isDrawing && this.state.tool!=='fill') {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = 0;
       this.y = 0;
@@ -186,6 +186,7 @@ class Canvas extends React.Component {
   }
 
   render() {
+    //using hidden for toolbox so it still takes up space
     return (
       <div id="containerBoard">
         <div id="containerCanvas">
@@ -194,7 +195,9 @@ class Canvas extends React.Component {
           <Overlay overlay={this.props.overlay} text={this.props.text} choice={this.props.choice} reason={this.props.reason} scores={this.props.scores}/>
           }
         </div>
+      <div style={{visibility: this.props.drawing?'block':'hidden'}}>
       <Toolbox callback={this.toolSelect} clear={this.clear}/>
+      </div>
       </div>
     );
   }
