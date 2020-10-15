@@ -98,15 +98,49 @@ io.on('connect', socket => {
 		}
 	});
 
-	socket.on('draw', (data)=>{
+	socket.on('tool', (data)=>{
+		//format: array: [tool,color,width]
+		//tools: 0 pen 1 rubber 2 fill 3 clear(reserved for its own function)
+		//color: 0 - 22
+		//width: 0 - 4
 		const clientrooms = Object.keys(socket.rooms);
-		if(clientrooms.length != 2 || socket.id != Array.isArray(data) || data.length != 3){
+		if(clientrooms.length != 2 || Array.isArray(data) || data.length != 3){
 			console.log('error');
 			return
 		}
 		let roomcode = clientrooms[1];
 		let room = rooms.get(roomcode);
-		if(socket.id == room.currentPlayer && data[0] < 4 && data[1] >= 0 && data[1] <= 800 && data[2] >= 0 && data[2] <= 600){
+		if(socket.id==room.currentPlayer && data[0] >= 0 && data[0] <= 3 && data[1] >= 0 && data[1] <= 22 && data[2]>=0 &&  data[2] <= 4){
+			room.tool(data);
+			socket.to(roomcode).emit('tool',data);
+		}
+	});
+
+	socket.on('clear', (data)=>{
+		//special case for clear,
+		//data is last used tool
+		const clientrooms = Object.keys(socket.rooms);
+		if(clientrooms.length != 2 || Array.isArray(data) || data.length != 3){
+			console.log('error');
+			return
+		}
+		let roomcode = clientrooms[1];
+		let room = rooms.get(roomcode);
+		if(socket.id==room.currentPlayer && data[0] >= 0 && data[0] <= 3 && data[1] >= 0 && data[1] <= 22 && data[2]>=0 &&  data[2] <= 4){
+			room.tool(clear);
+			socket.to(roomcode).emit('clear',data);
+		}
+	});
+
+	socket.on('draw', (data)=>{
+		const clientrooms = Object.keys(socket.rooms);
+		if(clientrooms.length != 2 || !Array.isArray(data) || data.length != 2){
+			console.log('error');
+			return
+		}
+		let roomcode = clientrooms[1];
+		let room = rooms.get(roomcode);
+		if(socket.id==room.curentPlayer && data[0] >= 0 && data[0] <= 800 && data[1] >= 0 && data[1] <= 600){
 			room.draw(data);
 			socket.to(roomcode).emit('draw',data);
 		}

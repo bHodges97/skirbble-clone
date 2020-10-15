@@ -172,18 +172,16 @@ class Room{
 	}
 
 	draw(data){
-		//clear
-		if(data[0] == 3){
-			this.memory = [];
-			this.last = data[0];
-		}else{
-			if(data[0] == last){
-				this.memory.push(-data[0]);
-				this.last = data[0];
-			}
-			this.memory.push(data[1]);
-			this.memory.push(data[2]);
-		}
+		this.memory[this.memoery.length-1].push(data[0]);
+		this.memory[this.memoery.length-1].push(data[1]);
+	}
+
+	tool(data){
+		this.memory.push(data);
+	}
+
+	clear(data){
+		this.memory = [data];
 	}
 }
 
