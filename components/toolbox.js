@@ -3,10 +3,8 @@ import TOOL from "./tool"
 class Toolbox extends React.Component {
   constructor(props) {
     super(props);
-    this.row1 = ["#FFFFFF","#C1C1C1","#EF130B","#FF7100","#FFE400","#00CC00","#00B2FF","#231FD3","#A300BA","#D37CAA","#A0522D"];
-    this.row2 = ["#000000","#4C4C4C","#740B07","#C23800","#E8A200","#005510","#00569E","#0E0865","#550069","#A75574","#63300D"];
     this.renderColorItem = this.renderColorItem.bind(this);
-    this.state = {tool: TOOL.PEN,width: 6,color: '#000000'};
+    this.state = {tool: TOOL.PEN, width: 0,color: 11};
     this.changeTool = this.changeTool.bind(this);
   }
 
@@ -14,9 +12,9 @@ class Toolbox extends React.Component {
   componentDidMount(){
   }
 
-  renderColorItem(x,id){
+  renderColorItem(x){
     return (
-      <div className="colorItem" style={{backgroundColor: x}} key={id} data-type='color' data-value={x} onClick={this.changeTool}/>
+      <div className="colorItem" style={{backgroundColor: TOOL.COLOR[x]}} key={x} data-type='color' data-value={x} onClick={this.changeTool}/>
     )
   }
 
@@ -28,17 +26,27 @@ class Toolbox extends React.Component {
   };
 
   render() {
+    const row1 = [];
+    const row2 = [];
+    let i = 0;
+    //row size is 11, total 22 items
+    for(;i < 11; i++){
+      row1.push(this.renderColorItem(i));
+    }
+    for(;i < 22; i++){
+      row2.push(this.renderColorItem(i));
+    }
 
     return (
-      <div className="containerToolbar">
+      <div className="containerToolbar" style={{visibility: this.props.show?'visible':'hidden'}}>
         <div className="colorPreview" style={{backgroundColor: this.state.color}}>
         </div>
         <div className="containerColorbox">
           <div className="containerColorColumn">
-            {this.row1.map(this.renderColorItem)}
+            {row1}
           </div>
           <div className="containerColorColumn">
-            {this.row2.map(this.renderColorItem)}
+            {row2}
           </div>
         </div>
         <div className="containerTools">
@@ -53,22 +61,22 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerBrushSizes">
-          <div className={`brushSize ${this.state.width==6?'toolActive':''}`} data-type='width' data-value={6} onClick={this.changeTool}>
+          <div className={`brushSize ${this.state.width==0?'toolActive':''}`} data-type='width' data-value={0} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size6"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==16?'toolActive':''}`} data-type='width' data-value={16} onClick={this.changeTool}>
+          <div className={`brushSize ${this.state.width==1?'toolActive':''}`} data-type='width' data-value={1} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size16"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==30?'toolActive':''}`} data-type='width' data-value={30} onClick={this.changeTool}>
+          <div className={`brushSize ${this.state.width==2?'toolActive':''}`} data-type='width' data-value={2} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size30"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==44?'toolActive':''}`} data-type='width' data-value={44} onClick={this.changeTool}>
+          <div className={`brushSize ${this.state.width==3?'toolActive':''}`} data-type='width' data-value={3} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size44"/>
             </div>

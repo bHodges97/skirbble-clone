@@ -14,6 +14,7 @@ class Room{
 		this.players = [];
 		this.playerCount = 0;
 		this.resetState();
+		this.memory = []
 	}
 
 	resetState(){
@@ -28,8 +29,9 @@ class Room{
 		this.image = "";
 		this.startTime = Date.now();
 		this.drawTime = 80;
-		this.timer = null;
+		this.memory = []
 		clearTimeout(this.timer);
+		this.timer = null;
 
 		for(let player of this.players){
 			player.participated = false;
@@ -172,8 +174,10 @@ class Room{
 	}
 
 	draw(data){
-		this.memory[this.memoery.length-1].push(data[0]);
-		this.memory[this.memoery.length-1].push(data[1]);
+		if(this.memory.length){
+		this.memory[this.memory.length-1].push(data[0]);
+		this.memory[this.memory.length-1].push(data[1]);
+		}
 	}
 
 	tool(data){

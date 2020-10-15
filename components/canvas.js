@@ -2,6 +2,7 @@ import React from "react"
 import Toolbox from "./toolbox"
 import Overlay from "./overlay"
 import TOOL from "./tool"
+import SocketContext from "components/socketcontext"
 
 
 class Canvas extends React.Component {
@@ -12,15 +13,16 @@ class Canvas extends React.Component {
     this.mouseUp = this.mouseUp.bind(this); 
     this.mouseMove = this.mouseMove.bind(this); 
     this.drawLine = this.drawLine.bind(this); 
-    this.x = 0;
-    this.y = 0;
+    this.x = null;
+    this.y = null;
     this.isDrawing = false;
     this.isInside = false;
     this.state = {
       context: null,
-      color: '#000000',
+      color: 11,
       tool: TOOL.PEN,
-      width: 6,
+      width: 0,
+      drawing: false,
     };
     this.toolSelect = this.toolSelect.bind(this);
     this.floodFill = this.floodFill.bind(this);
@@ -38,7 +40,7 @@ class Canvas extends React.Component {
     ref.height = ref.offsetHeight;
     //why is react like this????
     //ctx is not defined if i just do this.context = ....
-    this.setState({context: ctx, scaleX: this.scaleX, scaleY: this.scaleY});
+    this.setState({context: ctx, scaleX: scaleX, scaleY: scaleY});
 
     ctx.lineJoin = 'round';
     ctx.fillStyle = 'white';
@@ -50,32 +52,64 @@ class Canvas extends React.Component {
     ctx2.lineJoin = 'round';
     ctx2.fillStyle = 'white';
     this.setState({ctx2: ctx2});
+
+    this.context.on('tool', (data) => {
+      this.setState({tool: data[0]})
+      if(data[0] != TOOL.RUBBER){
+        this.setState({color: data[1], width: data[2]}); 
+      }
+    });
+    this.context.on('draw', (data) => {
+      let x = Math.round(data[0] / this.state.scaleX);
+      let y = Math.round(data[1] / this.state.scaleY);
+      if(this.state.tool == TOOL.FILL){
+        this.floodFill(x,y);
+      }else{
+        if(this.x != null && this.y != null){
+          this.drawLine(this.x, this.y, x, y);
+        }
+        this.x = x;
+        this.y = y;
+      }
+    });
+    this.context.on('clear', (data) => {
+      this.clear();
+    });
   }
 
   mouseDown(e) {
     if(e.button!=0 || !this.props.drawing)return
+    let x = e.nativeEvent.offsetX;
+    let y = e.nativeEvent.offsetY;
+    this.context.emit('draw',[this.x * this.state.scaleX,this.y * this.state.scaleY])
     if(this.state.tool != TOOL.FILL) {
-      this.x = e.nativeEvent.offsetX;
-      this.y = e.nativeEvent.offsetY;
+      this.x = x;
+      this.y = y;
       this.isDrawing = true;
     }else {
-      this.floodFill(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+      this.floodFill(x,y);
     }
   }
 
   mouseMove(e) {
     if (this.props.drawing && this.isDrawing === true && this.state.tool !== TOOL.FILL) {
-      this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-      this.x = e.nativeEvent.offsetX;
-      this.y = e.nativeEvent.offsetY;
+      let x = e.nativeEvent.offsetX;
+      let y = e.nativeEvent.offsetY;
+      this.context.emit('draw',[x * this.state.scaleX, y * this.state.scaleY])
+      this.drawLine(this.x, this.y, x, y);
+      this.x = x;
+      this.y = y;
     }
   }
 
   mouseUp(e) {
     if (this.props.drawing && this.isDrawing && this.state.tool!==TOOL.FILL) {
-      this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-      this.x = 0;
-      this.y = 0;
+      let x = e.nativeEvent.offsetX;
+      let y = e.nativeEvent.offsetY;
+      this.context.emit('draw',[x * this.state.scaleX, y * this.state.scaleY])
+      this.drawLine(this.x, this.y, x, y);
+      this.x = null;
+      this.y = null;
       this.isDrawing = false;
       const ctx2 = this.state.ctx2;
       ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
@@ -88,11 +122,11 @@ class Canvas extends React.Component {
     //draw line on hidden canvas as a mask for the actual canvas.
     //gets rid of fuzzy edges 
     let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
-    let data = image.data
-    let w = this.state.width
-    let height = image.height
-    let width = image.width
-    let color = this.state.tool===TOOL.PEN?this.state.color:'#ffffff';
+    let data = image.data;
+    let w = TOOL.WIDTH[this.state.width];
+    let height = image.height;
+    let width = image.width;
+    let color = this.state.tool==TOOL.PEN?TOOL.COLOR[this.state.color]:'#ffffff';
     ctx2.beginPath();
     ctx2.strokeStyle = color;
     ctx2.lineWidth = w;
@@ -101,21 +135,21 @@ class Canvas extends React.Component {
     ctx2.closePath();
     ctx2.stroke();
     let image2 = ctx2.getImageData(0,0,width,height);
-    let d2 = image2.data
+    let d2 = image2.data;
 
-    let lx = Math.max(0, Math.min(x0,x1)-w)
-    let ly = Math.max(0, Math.min(y0,y1)-w)
-    let min = 4 * (lx + ly * width)
-    let hx = Math.min(width, Math.max(x0,x1)+w)
-    let hy = Math.min(height, Math.max(y0,y1)+w)
-    let max = 4 * (hx + hy * width)
+    let lx = Math.max(0, Math.min(x0,x1)-w);
+    let ly = Math.max(0, Math.min(y0,y1)-w);
+    let min = 4 * (lx + ly * width);
+    let hx = Math.min(width, Math.max(x0,x1)+w);
+    let hy = Math.min(height, Math.max(y0,y1)+w);
+    let max = 4 * (hx + hy * width);
 
     let newColor = this.hexToRgb(color);
     for(let x = min; x <= max; x+=4){
       if(d2[x+3]){
-        data[x] = newColor[0]
-        data[x+1] = newColor[1]
-        data[x+2] = newColor[2]
+        data[x] = newColor[0];
+        data[x+1] = newColor[1];
+        data[x+2] = newColor[2];
       }
     }
 
@@ -138,7 +172,7 @@ class Canvas extends React.Component {
     let width = image.width;
     let height = image.height;
     let target = 4*(x+y*width)
-    let newColor = this.hexToRgb(this.state.color);
+    let newColor = this.hexToRgb(TOOL.COLOR[this.state.color]);
     let oldColor = data.slice(target,target+3);
     let rowWidth = width * 4;
     let queue = [target]
@@ -179,12 +213,16 @@ class Canvas extends React.Component {
   }
 
   toolSelect(e){
+    this.x = null;
+    this.y = null;
     this.setState({[e.dataset.type]: e.dataset.value})
+    this.context.emit('tool',[this.state.tool,this.state.color,this.state.width]);
   }
 
   clear(){
     const ctx = this.state.context;
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.context.emit('clear',[this.state.tool,this.state.color,this.state.width]);
   }
 
   render() {
@@ -197,12 +235,11 @@ class Canvas extends React.Component {
           <Overlay overlay={this.props.overlay} text={this.props.text} choice={this.props.choice} reason={this.props.reason} scores={this.props.scores}/>
           }
         </div>
-      <div style={{visibility: this.props.drawing?'block':'hidden'}}>
-      <Toolbox callback={this.toolSelect} clear={this.clear}/>
-      </div>
+        <Toolbox callback={this.toolSelect} clear={this.clear} show={this.props.drawing}/>
       </div>
     );
   }
 }
+Canvas.contextType = SocketContext;
 
 export default Canvas
