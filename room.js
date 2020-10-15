@@ -83,7 +83,6 @@ class Room{
 			for(let i = 0; i < 3; i++){
 				this.choices[i] = wordlist.sample();
 			}
-			console.log(this.choices);
 
 			this.currentPlayer = player.id;
 			this.currentPlayerName = player.name;
@@ -169,6 +168,21 @@ class Room{
 
 		for(let p of this.players){
 			p.change = 0;
+		}
+	}
+
+	draw(data){
+		//clear
+		if(data[0] == 3){
+			this.memory = [];
+			this.last = data[0];
+		}else{
+			if(data[0] == last){
+				this.memory.push(-data[0]);
+				this.last = data[0];
+			}
+			this.memory.push(data[1]);
+			this.memory.push(data[2]);
 		}
 	}
 }

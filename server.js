@@ -98,6 +98,20 @@ io.on('connect', socket => {
 		}
 	})
 
+	socket.on('draw', (data)=>){
+		const clientrooms = Object.keys(socket.rooms);
+		if(clientrooms.length != 2 || || socket.id != Array.isArray(data) || data.length != 3){
+			console.log('error');
+			return
+		}
+		let roomcode = clientrooms[1];
+		let room = rooms.get(roomcode);
+		if(socket.id == room.currentPlayer && data[0] < 4 && data[1] >= 0 && data[1] <= 800 && data[2] >= 0 && data[2] <= 600){
+			room.draw(data);
+			socket.to(roomcode).emit('draw',data);
+		}
+	}
+
 	//player chooses a word;
 	socket.on('choice', (data)=>{
 		const clientrooms = Object.keys(socket.rooms);
