@@ -8,7 +8,7 @@ const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const nextHandle = nextApp.getRequestHandler()
 const Room = require('./room.js');
-const wordlist = require('./words.js');
+const wordlist = require('./lang/english.js');
 
 Array.prototype.sample = function(){
   return this[Math.floor(Math.random()*this.length)];

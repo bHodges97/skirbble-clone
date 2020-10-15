@@ -1,4 +1,4 @@
-const wordlist = require('./words.js');
+const wordlist = require('./lang/english.js');
 
 //TODO: 
 //handle game state if active  player disconnects
