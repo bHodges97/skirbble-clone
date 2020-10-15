@@ -1,6 +1,8 @@
 import React from "react"
 import Toolbox from "./toolbox"
 import Overlay from "./overlay"
+import TOOL from "./tool"
+
 
 class Canvas extends React.Component {
   constructor(props) {
@@ -17,7 +19,7 @@ class Canvas extends React.Component {
     this.state = {
       context: null,
       color: '#000000',
-      tool: 'pen',
+      tool: TOOL.PEN,
       width: 6,
     };
     this.toolSelect = this.toolSelect.bind(this);
@@ -52,7 +54,7 @@ class Canvas extends React.Component {
 
   mouseDown(e) {
     if(e.button!=0 || !this.props.drawing)return
-    if(this.state.tool != 'fill') {
+    if(this.state.tool != TOOL.FILL) {
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
       this.isDrawing = true;
@@ -62,7 +64,7 @@ class Canvas extends React.Component {
   }
 
   mouseMove(e) {
-    if (this.props.drawing && this.isDrawing === true && this.state.tool !== 'fill') {
+    if (this.props.drawing && this.isDrawing === true && this.state.tool !== TOOL.FILL) {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = e.nativeEvent.offsetX;
       this.y = e.nativeEvent.offsetY;
@@ -70,7 +72,7 @@ class Canvas extends React.Component {
   }
 
   mouseUp(e) {
-    if (this.props.drawing && this.isDrawing && this.state.tool!=='fill') {
+    if (this.props.drawing && this.isDrawing && this.state.tool!==TOOL.FILL) {
       this.drawLine(this.x, this.y, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
       this.x = 0;
       this.y = 0;
@@ -90,7 +92,7 @@ class Canvas extends React.Component {
     let w = this.state.width
     let height = image.height
     let width = image.width
-    let color = this.state.tool==='pen'?this.state.color:'#ffffff';
+    let color = this.state.tool===TOOL.PEN?this.state.color:'#ffffff';
     ctx2.beginPath();
     ctx2.strokeStyle = color;
     ctx2.lineWidth = w;

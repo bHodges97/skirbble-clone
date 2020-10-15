@@ -96,11 +96,11 @@ io.on('connect', socket => {
 			//emit generic chat message
 			io.to(roomcode).emit('message', {name: player.name, content: data});
 		}
-	})
+	});
 
-	socket.on('draw', (data)=>){
+	socket.on('draw', (data)=>{
 		const clientrooms = Object.keys(socket.rooms);
-		if(clientrooms.length != 2 || || socket.id != Array.isArray(data) || data.length != 3){
+		if(clientrooms.length != 2 || socket.id != Array.isArray(data) || data.length != 3){
 			console.log('error');
 			return
 		}
@@ -110,7 +110,7 @@ io.on('connect', socket => {
 			room.draw(data);
 			socket.to(roomcode).emit('draw',data);
 		}
-	}
+	});
 
 	//player chooses a word;
 	socket.on('choice', (data)=>{

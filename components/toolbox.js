@@ -1,3 +1,4 @@
+import TOOL from "./tool"
 
 class Toolbox extends React.Component {
   constructor(props) {
@@ -5,7 +6,7 @@ class Toolbox extends React.Component {
     this.row1 = ["#FFFFFF","#C1C1C1","#EF130B","#FF7100","#FFE400","#00CC00","#00B2FF","#231FD3","#A300BA","#D37CAA","#A0522D"];
     this.row2 = ["#000000","#4C4C4C","#740B07","#C23800","#E8A200","#005510","#00569E","#0E0865","#550069","#A75574","#63300D"];
     this.renderColorItem = this.renderColorItem.bind(this);
-    this.state = {tool: 'pen',width: 6,color: '#000000'};
+    this.state = {tool: TOOL.PEN,width: 6,color: '#000000'};
     this.changeTool = this.changeTool.bind(this);
   }
 
@@ -41,13 +42,13 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerTools">
-          <div className={`tool ${this.state.tool==='pen'?'toolActive':''}`} data-type='tool' data-value="pen" onClick={this.changeTool}>
+          <div className={`tool ${this.state.tool===TOOL.PEN?'toolActive':''}`} data-type='tool' data-value={TOOL.PEN} onClick={this.changeTool}>
             <img className="toolIcon" src="/pen.png"/>
           </div>
-          <div className={`tool ${this.state.tool==='rubber'?'toolActive':''}`} data-type='tool' data-value="rubber" onClick={this.changeTool}>
+          <div className={`tool ${this.state.tool===TOOL.RUBBER?'toolActive':''}`} data-type='tool' data-value={TOOL.RUBBER} onClick={this.changeTool}>
             <img className="toolIcon" src="/rubber.png"/>
           </div>
-          <div className={`tool ${this.state.tool==='fill'?'toolActive':''}`} data-type='tool' data-value="fill" onClick={this.changeTool}>
+          <div className={`tool ${this.state.tool===TOOL.FILL?'toolActive':''}`} data-type='tool' data-value={TOOL.FILL} onClick={this.changeTool}>
             <img className="toolIcon" src="/filltool.png"/>
           </div>
         </div>
