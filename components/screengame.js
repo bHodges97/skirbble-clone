@@ -41,7 +41,7 @@ class ScreenGame extends React.Component {
         scores: undefined,
         word: data.word,
         timer: Math.floor(80 - (Date.now() - data.time) / 1000),
-        drawing: data.word[0] !== '_',
+        drawing: socket.id !== data.drawing,
       })
 
       this.timerID = setInterval(

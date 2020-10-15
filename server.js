@@ -57,7 +57,7 @@ io.on('connect', socket => {
 			socket.emit('choosing', room.currentPlayerName);
 		}else if(room.state == 'draw'){
 			console.log("this")
-			socket.emit('secret', {time: room.startTime, word: room.hiddenWord});
+			socket.emit('secret', {time: room.startTime, word: room.hiddenWord, drawing: room.currentPlayer});
 		}
 		socket.join(roomcode);
 		socket.to(roomcode).emit('playerjoined', {index: idx, player: room.players[idx]});

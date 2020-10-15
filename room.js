@@ -133,13 +133,13 @@ class Room{
 		console.log("triggered: start()");
 		this.startTime = Date.now();
 		this.state = "draw";
-		let secret = {time: this.startTime, word: this.hiddenWord}
+		let secret = {time: this.startTime, word: this.hiddenWord, drawing: this.currentPlayer}
 		for(let x of this.players){
 			if(x.id!=this.currentPlayer){
 				this.io.to(this.id).emit('secret', secret);
 			}
 		}
-		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word});
+		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word, drawing: this.currentPlayer});
 		this.io.to(this.id).emit('message', {content: this.currentPlayerName + " is now drawing!", color: '#3975ce'});
 		//count down 60 seconds
 		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
