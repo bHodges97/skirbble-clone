@@ -33,38 +33,12 @@ io.on('connect', socket => {
   //playing sends message in chat
   socket.on('message', (data)=>{
 	const clientrooms = Object.keys(socket.rooms);
-	if(typeof(data) !== 'string' || data.length > 100 || clientrooms.length == 1){
-	  socket.emit('error')
-	  return
-	}
-	let roomcode = clientrooms[1]
-	let room = rooms.get(roomcode);
-	let player = room.getPlayer(socket.id);
-
-	//if player is the drawer or has guessed correctly
-	if(room.state == 'draw' && (player.id == room.currentPlayer || player.scoreDelta > 0)){
-	  let message = {name: player.name, content: data, color: '#7dad3f'};
-	  for(p of room.players.filter(x=>x.scoreDelta>0)){
-		io.to(p.id).emit('message', message);
-	  }
-	}else if(room.state == 'draw' && data.trim().toLowerCase() == room.word){
-	  //Player guessed the right word!
-	  player.scoreDelta = Math.floor(room.drawTime - (Date.now() - room.startTime) / 1000);
-	  player.score += player.scoreDelta
-	  io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
-	  io.to(roomcode).emit('update', {id: player.id, score:player.score});
-	  if(room.players.filter((x)=>x.scoreDelta>0).length == room.playerCount - 1){
-		clearTimeout(room.timer);
-		room.end('Everybody guessed the word!');
-	  }
-	}else{
-	  //emit generic chat message
-	  io.to(roomcode).emit('message', {name: player.name, content: data});
+	if(clientrooms.length == 2) {
+	  rooms.get(clientrooms[1]).message(data, socket);
 	}
   });
 
   socket.on('tool', (data)=>{
-	console.log("tool change", data);
 	//format: array: [tool,color,width]
 	//tools: pen 0 rubber 1 fill 2
 	//color: 0 - 22
@@ -82,28 +56,19 @@ io.on('connect', socket => {
 	}
   });
 
+  //special case for clear, data is last used tool
   socket.on('clear', (data)=>{
-	//special case for clear,
-	//data is last used tool
 	const clientrooms = Object.keys(socket.rooms);
-	if(clientrooms.length != 2 || !Array.isArray(data) || data.length != 3 || !data.all(Number.isInteger)){
-	  console.log('error');
-	  return
-	}
-	let roomcode = clientrooms[1];
-	let room = rooms.get(roomcode);
-	if(socket.id==room.currentPlayer && data[0] >= 0 && data[0] <= 3 && data[1] >= 0 && data[1] <= 22 && data[2]>=0 &&  data[2] <= 4){
-	  room.tool(clear);
-	  socket.to(roomcode).emit('clear',data);
+	if(clientrooms.length == 2){
+	  rooms.get(clientrooms[1]).clear(data, socket);
 	}
   });
 
   socket.on('draw', (data)=>{
 	const clientrooms = Object.keys(socket.rooms);
-	if(clientrooms.length != 2) {
+	if(clientrooms.length == 2) {
 	  rooms.get(clientrooms[1]).draw(data, socket);
 	}
-
   });
 
   //player chooses a word;
@@ -117,8 +82,7 @@ io.on('connect', socket => {
   //player disconnects
   socket.on('disconnecting', () => {
 	const clientrooms = Object.keys(socket.rooms);
-	console.log("disconnecting");
-	if(clientrooms.length > 1) {
+	if(clientrooms.length == 2) {
 	  rooms.get(clientrooms[1]).removePlayer(socket);
 	}
   });
@@ -134,5 +98,3 @@ nextApp.prepare().then(() => {
 	console.log('> Ready on http://localhost:3000')
   })
 })
-
-

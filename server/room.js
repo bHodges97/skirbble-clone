@@ -6,6 +6,13 @@ const Player = require('./player.js');
 //handle game state if active  player disconnects
 //send current drawing to new player
 //ensure words chosen are unique
+//
+
+
+//check if value is between bounds (inclusive)
+function inBounds(x, lowBound, highBound) {
+	return x >= lowBound && x x<= highBound;
+}
 
 class Room{
 	constructor(id,io){
@@ -163,7 +170,7 @@ class Room{
 		if(!Array.isArray(data) || data.length != 2 || data.some(Number.isNaN)){
 			return -1
 		}
-		if(socket.id==this.currentPlayer && data[0] >= 0 && data[0] <= 800 && data[1] >= 0 && data[1] <= 600){
+		if(socket.id==this.currentPlayer && inBounds(data[0], 0, 800) && inBounds(data[1], 0, 600)){
 			if(this.memory.length) {
 				this.memory[this.memory.length-1].push(data[0]);
 				this.memory[this.memory.length-1].push(data[1]);
@@ -176,8 +183,15 @@ class Room{
 		this.memory.push(data);
 	}
 
-	clear(data){
+	clear(data, socket){
 		this.memory = [data];
+		if(!Array.isArray(data) || data.length != 3 || !data.all(Number.isInteger)){
+		  return -1
+		}
+		if(socket.id == this.currentPlayer && inBounds(data[0], 0 ,3) && inBounds(data[1], 0, 22) && inBounds(data[2], 0, 4)){
+		  this.tool(clear);
+		  socket.to(roomcode).emit('clear', data);
+		}
 	}
 
 	sendChoices(){
@@ -218,7 +232,7 @@ class Room{
 		}
 	}
 
-	selectChoice(choice, socket){
+	selectChoice(choice, socket) {
 		if(!Number.isInteger(choice) || choice < 0  || choice> 2){
 		  return -1
 		}
@@ -231,6 +245,36 @@ class Room{
 		this.compareWord = this.word.toLowerCase();
 		this.choices = ['','',''];
 		this.start();
+	}
+
+	message(data, socket) {
+		if(typeof(data) !== 'string' || data.length > 100) {
+			return -1;
+		}
+		let player = this.getPlayer(socket.id);
+
+		//if player is the drawer or has guessed correctly
+		if(this.state == 'draw' && (player.id == this.currentPlayer || player.scoreDelta > 0)){
+			const message = {name: player.name, content: data, color: '#7dad3f'};
+			for(p of this.players.filter(x=>x.scoreDelta>0)){
+				io.to(p.id).emit('message', message);
+			}
+		}else if(this.state == 'draw' && data.trim().toLowerCase() == this.word){
+			//Player guessed the right word!
+			player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
+			player.score += player.scoreDelta
+			this.io.to(this.id).emit('message', {content: `${player.name} guessed the word!`, color: '#56ce27'});
+			this.io.to(this.is).emit('update', {id: player.id, score:player.score});
+
+			//check all players have scored
+			if(this.players.filter((x)=>x.scoreDelta>0).length == this.playerCount - 1) {
+				clearTimeout(this.timer);
+				this.end('Everybody guessed the word!');
+			}
+		}else{
+			//emit generic chat message
+			this.io.to(this.id).emit('message', {name: player.name, content: data});
+		}
 	}
 }
 
