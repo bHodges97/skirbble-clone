@@ -45,7 +45,7 @@ class Room{
 		this.currentPlayerName = '';
 		this.word = "";
 		this.maskedWord = "";
-		this.compareWord = "";
+		this.lowerCaseWord = "";
 		this.choices = ['','',''];
 		this.round = 0;
 		this.image = "";
@@ -106,7 +106,10 @@ class Room{
 		if(this.state === STATE.CHOICE){
 		  socket.emit('choosing', this.currentPlayerName);
 		}else if(this.state === STATE.DRAW){
-		  socket.emit('secret', {time: this.getEndTime, word: this.maskedWord, drawing: this.currentPlayer});
+		  socket.emit('secret', {
+			  time: this.getEndTime(),
+			  word: this.maskedWord,
+			  drawing: this.currentPlayer});
 		}
 		socket.join(this.id);
 		socket.to(this.id).emit('playerjoined', player.publicInfo());
@@ -137,7 +140,11 @@ class Room{
 		console.log("triggered: start()");
 		this.startTime = Date.now();
 		this.state = STATE.DRAW;
-		let secret = {time: this.getEndTime(), word: this.maskedWord, drawing: this.currentPlayer}
+		let secret = {
+			time: this.getEndTime(),
+			word: this.maskedWord,
+			drawing: this.currentPlayer
+		}
 		for(let x of this.players){
 			if(x.id!=this.currentPlayer){
 				this.io.to(this.id).emit('secret', secret);
@@ -163,21 +170,29 @@ class Room{
 		//return to choice
 		this.state = STATE.END;
 		//send results in descending order
-		let deltas = this.players.filter((x)=>x.id!=this.currentPlayer)
-									.map((x)=>{return {name: x.name, change: x.scoreDelta}});
-		let drawer = this.currentPlayName;
+		let deltas = this.players.filter(x=>x.id!=this.currentPlayer);
+		deltas = deltas.map(x=>{
+			return {
+				name: x.name,
+				change: x.scoreDelta
+			}
+		});
+		let drawer = this.currentPlayerName;
 		//calculate drawer score = sum(changes) / correct guesses + 1
-		let drawerscore = Math.floor(deltas.reduce((x,y)=>x+y.scoreDelta,0) / (deltas.length + 1));  
-		deltas.push({name: drawer, change: drawerscore});
-		deltas.sort((x,y)=>y.scoreDelta-x.scoreDelta)
+		let drawerScore = Math.floor(deltas.reduce((x,y)=>x+y.change, 0) / (deltas.length + 1));  
+		deltas.push({name: drawer, change: drawerScore});
+		deltas.sort((x,y)=>y.change-x.change)
 		
-
-		this.io.to(this.id).emit('end', {reason: reason, scores: deltas ,word: this.word});
+		this.io.to(this.id).emit('end', {
+			reason: reason,
+			scores: deltas,
+			word: this.word
+		});
 		//wait 5 seconds and then continue game loop
 		setTimeout(()=>{this.sendChoices()}, 5000);
 
-		for(let p of this.players){
-			p.scoreDelta = 0;
+		for(let player of this.players){
+			player.scoreDelta = 0;
 		}
 	}
 
@@ -264,7 +279,7 @@ class Room{
 
 		this.word = this.choices[choice];
 		this.maskedWord = this.word.replace(/\S/g, '_');
-		this.compareWord = this.word.toLowerCase();
+		this.lowerCaseWord = this.word.toLowerCase();
 		this.choices = ['','',''];
 		this.start();
 	}
@@ -276,25 +291,34 @@ class Room{
 		let player = this.getPlayer(socket.id);
 
 		if(this.state === STATE.DRAW) {
-		//if player is the drawer or has guessed correctly 
+			//if player is the drawer or has guessed correctly 
 			if(player.id === this.currentPlayer || player.scoreDelta) {
-				const message = {name: player.name, content: data, color: '#7dad3f'};
+				const message = {
+					name: player.name,
+					content: data,
+					color: '#7dad3f'
+				};
 				for(p of this.players.filter(x=>x.scoreDelta)) {
 					io.to(p.id).emit('message', message);
 				}
+				//emit to drawer
+				socket.emit('message', message);
 				return 0;
-			} else if(data.trim().toLowerCase() === this.word) {
+			}
+
+			if(data.trim().toLowerCase() === this.lowerCaseWord) {
 				//Player guessed the right word!
 				player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
-				player.score += player.scoreDelta
+				player.score += player.scoreDelta;
 
 				this.io.to(this.id).emit('message', {
 					content: `${player.name} guessed the word!`,
-					color: '#56ce27'}
-				);
+					color: '#56ce27'
+				});
+
 				this.io.to(this.is).emit('update', {
 					id: player.id,
-					score:player.score
+					score: player.score
 				});
 
 				//check all players have scored

@@ -38,6 +38,7 @@ io.on('connect', socket => {
 	}
   });
 
+  //TODO: rewrite
   socket.on('tool', (data)=>{
 	//format: array: [tool,color,width]
 	//tools: pen 0 rubber 1 fill 2

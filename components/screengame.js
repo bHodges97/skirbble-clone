@@ -24,7 +24,7 @@ class ScreenGame extends React.Component {
   tick(){
     if(this.state.end) {
       this.setState({
-        timer: Math.max(0, Math.floor((this.state.end - Date.now()) / 1000)),
+        timer: Math.max(0, Math.round((this.state.end - Date.now()) / 1000)),
       })
     } else {
       this.setState({
@@ -56,7 +56,7 @@ class ScreenGame extends React.Component {
 
     this.socket.on('round', (data)=>{
       this.setState({
-        round: data,
+       round: data,
         overlay: true,
         text: "Round: " + data,
       });
@@ -69,6 +69,7 @@ class ScreenGame extends React.Component {
         reason: data.reason,
         scores: data.scores,
         text: "The word was '" + data.word + "'.",
+        timer: 0
       })
 
       let players = [... this.state.players]
