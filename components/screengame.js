@@ -99,8 +99,7 @@ class ScreenGame extends React.Component {
     });
 
     this.socket.on('playerjoined', (data)=>{
-      let players = [... this.state.players]
-      players[data.index] = data.player;
+      let players = [...this.state.players, data]
       this.setState({players: players});
     });
 
