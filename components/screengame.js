@@ -24,7 +24,7 @@ class ScreenGame extends React.Component {
   tick(){
     if(this.state.end) {
       this.setState({
-        timer: Math.max(0, Math.round((this.state.end - Date.now()) / 1000)),
+        timer: Math.max(0, ~~((this.state.end - Date.now()) / 1000)),
       })
     } else {
       this.setState({
