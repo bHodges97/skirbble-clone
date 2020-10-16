@@ -31,12 +31,20 @@ class Room{
 		this.memory = []
 	}
 
+	getEndTime(){
+		return this.startTime + this.drawTime * 1000;
+	}
+
+	getPlayer(id) {
+		return this.players.filter(x=>x.id===id).pop()
+	}
+
 	resetState(){
 		this.state = STATE.LOBBY;
 		this.currentPlayer = null;
 		this.currentPlayerName = '';
 		this.word = "";
-		this.hiddenWord = "";
+		this.maskedWord = "";
 		this.compareWord = "";
 		this.choices = ['','',''];
 		this.round = 0;
@@ -98,17 +106,13 @@ class Room{
 		if(this.state === STATE.CHOICE){
 		  socket.emit('choosing', this.currentPlayerName);
 		}else if(this.state === STATE.DRAW){
-		  socket.emit('secret', {time: this.startTime, word: this.hiddenWord, drawing: this.currentPlayer});
+		  socket.emit('secret', {time: this.getEndTime, word: this.maskedWord, drawing: this.currentPlayer});
 		}
 		socket.join(this.id);
 		socket.to(this.id).emit('playerjoined', player.publicInfo());
 		this.io.to(this.id).emit('message', {content: `${properties[0]} joined.`, color: '#56ce27'});
 
 		return this.playerCount - 1
-	}
-
-	getPlayer(id) {
-		return this.players.filter(x=>x.id===id).pop()
 	}
 
 	//on player leave to room
@@ -133,14 +137,18 @@ class Room{
 		console.log("triggered: start()");
 		this.startTime = Date.now();
 		this.state = STATE.DRAW;
-		let secret = {time: this.startTime, word: this.hiddenWord, drawing: this.currentPlayer}
+		let secret = {time: this.getEndTime(), word: this.maskedWord, drawing: this.currentPlayer}
 		for(let x of this.players){
 			if(x.id!=this.currentPlayer){
 				this.io.to(this.id).emit('secret', secret);
 			}
 		}
-		this.io.to(this.currentPlayer).emit('secret', {time: this.startTime, word: this.word, drawing: this.currentPlayer});
-		this.io.to(this.id).emit('message', {content: this.currentPlayerName + " is now drawing!", color: '#3975ce'});
+		secret.word = this.word;
+		this.io.to(this.currentPlayer).emit('secret', secret);
+		this.io.to(this.id).emit('message', {
+			content: `${this.currentPlayerName} is now drawing!`,
+			color: '#3975ce'
+		});
 		//count down 60 seconds
 		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
 	}
@@ -255,7 +263,7 @@ class Room{
 		}
 
 		this.word = this.choices[choice];
-		this.hiddenWord = this.word.replace(/\S/g, '_');
+		this.maskedWord = this.word.replace(/\S/g, '_');
 		this.compareWord = this.word.toLowerCase();
 		this.choices = ['','',''];
 		this.start();

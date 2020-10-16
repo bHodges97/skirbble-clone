@@ -15,18 +15,22 @@ class ScreenGame extends React.Component {
       scores: undefined,
       round: 1,
       timer: 80,
+      end: null,
       players: [],
       drawing: false,
     };
   }
 
   tick(){
-    if(this.state.timer == 0){
-      return
+    if(this.state.end) {
+      this.setState({
+        timer: Math.max(0, Math.floor((this.state.end - Date.now()) / 1000)),
+      })
+    } else {
+      this.setState({
+        timer: 80,
+      })
     }
-    this.setState({
-      timer: this.state.timer - 1, 
-    })
   }
 
   componentDidMount(){
@@ -40,12 +44,13 @@ class ScreenGame extends React.Component {
         reason: '',
         scores: undefined,
         word: data.word,
-        timer: Math.floor(80 - (Date.now() - data.time) / 1000),
+        timer: 80,
+        end: data.time,
         drawing: this.socket.id == data.drawing,
       })
 
       this.timerID = setInterval(
-        () => this.tick(), 1000
+        () => this.tick(), 100
       );
     });
 
