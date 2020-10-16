@@ -36,7 +36,6 @@ class ScreenGame extends React.Component {
   componentDidMount(){
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
-      console.log("data",data);
       this.setState({
         overlay: false,
         text: '',
@@ -56,7 +55,7 @@ class ScreenGame extends React.Component {
 
     this.socket.on('round', (data)=>{
       this.setState({
-       round: data,
+        round: data,
         overlay: true,
         text: "Round: " + data,
       });
@@ -68,7 +67,7 @@ class ScreenGame extends React.Component {
         overlay: true,
         reason: data.reason,
         scores: data.scores,
-        text: "The word was '" + data.word + "'.",
+        text: `The word was '${data.word}'.`,
         timer: 0
       })
 
@@ -83,7 +82,7 @@ class ScreenGame extends React.Component {
     this.socket.on('choosing', (data)=>{
       this.setState({
         overlay: true,
-        text: data + " is choosing a word",
+        text: `${data} is choosing a word`,
         reason: '',
         scores: undefined,
       })

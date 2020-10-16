@@ -187,7 +187,7 @@ class Canvas extends React.Component {
       let next = queue.pop();
       if(!comp(next))continue;
 
-      let left = (Math.floor(next/rowWidth)) * rowWidth;
+      let left = ~~(next/rowWidth) * rowWidth;
       let right = left + rowWidth;
 
       let e = next;
