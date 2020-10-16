@@ -159,10 +159,16 @@ class Room{
 		}
 	}
 
-	draw(data){
-		if(this.memory.length){
-		this.memory[this.memory.length-1].push(data[0]);
-		this.memory[this.memory.length-1].push(data[1]);
+	draw(data, socket) {
+		if(!Array.isArray(data) || data.length != 2 || data.some(Number.isNaN)){
+			return -1
+		}
+		if(socket.id==this.currentPlayer && data[0] >= 0 && data[0] <= 800 && data[1] >= 0 && data[1] <= 600){
+			if(this.memory.length) {
+				this.memory[this.memory.length-1].push(data[0]);
+				this.memory[this.memory.length-1].push(data[1]);
+			}
+			socket.to(this.id).emit('draw',data);
 		}
 	}
 

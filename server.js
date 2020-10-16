@@ -14,20 +14,6 @@ Array.prototype.sample = function(){
   return this[Math.floor(Math.random()*this.length)];
 }
 
-function validate(user){
-  if(typeof(user) !== 'object' || !('name' in user) || user.name.length > 32){
-	return false	
-  }
-
-  let keys = ['hat','face','color'];
-  for (const key of keys){
-	if(!(key in user) || !Number.isInteger(user[key]) || user[key] < 0 || user[key] > 13){
-	  return false
-	}
-  }	
-  return {name: user.name, hat: user.hat, face: user.face, color: user.color}
-}
-
 rooms = new Map()
 room1 = new Room("room1",io);
 rooms.set("room1", room1);
@@ -41,12 +27,8 @@ io.on('connect', socket => {
 	if (room.players.some(e => e.id === socket.id)) {
 	  return;
 	}
-	let idx = room.addPlayer(data, socket);
-	//add player failed
-	if(idx === -1){
-	  return;
-	}
-   })
+	room.addPlayer(data, socket);
+  })
 
   //playing sends message in chat
   socket.on('message', (data)=>{
@@ -71,7 +53,6 @@ io.on('connect', socket => {
 	  player.score += player.scoreDelta
 	  io.to(roomcode).emit('message', {content: player.name + ' guessed the word!', color: '#56ce27'});
 	  io.to(roomcode).emit('update', {id: player.id, score:player.score});
-	  console.log(player.scoreDelta)
 	  if(room.players.filter((x)=>x.scoreDelta>0).length == room.playerCount - 1){
 		clearTimeout(room.timer);
 		room.end('Everybody guessed the word!');
@@ -119,16 +100,10 @@ io.on('connect', socket => {
 
   socket.on('draw', (data)=>{
 	const clientrooms = Object.keys(socket.rooms);
-	if(clientrooms.length != 2 || !Array.isArray(data) || data.length != 2 || data.some(Number.isNaN)){
-	  console.log('error');
-	  return
+	if(clientrooms.length != 2) {
+	  rooms.get(clientrooms[1]).draw(data, socket);
 	}
-	let roomcode = clientrooms[1];
-	let room = rooms.get(roomcode);
-	if(socket.id==room.currentPlayer && data[0] >= 0 && data[0] <= 800 && data[1] >= 0 && data[1] <= 600){
-	  room.draw(data);
-	  socket.to(roomcode).emit('draw',data);
-	}
+
   });
 
   //player chooses a word;
@@ -144,10 +119,7 @@ io.on('connect', socket => {
 	const clientrooms = Object.keys(socket.rooms);
 	console.log("disconnecting");
 	if(clientrooms.length > 1) {
-	  let room = rooms.get(clientrooms[1]);
-	  let name = room.removePlayer(clientrooms[0]);
-	  socket.to(clientrooms[1]).emit('playerleft', socket.id);
-	  socket.to(clientrooms[1]).emit('message', {content: name + " left.", color: '#ce4f0a'});
+	  rooms.get(clientrooms[1]).removePlayer(socket);
 	}
   });
 });
