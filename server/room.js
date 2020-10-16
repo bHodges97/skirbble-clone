@@ -8,10 +8,16 @@ const Player = require('./player.js');
 //ensure words chosen are unique
 //
 
-
 //check if value is between bounds (inclusive)
 function inBounds(x, lowBound, highBound) {
-	return x >= lowBound && x x<= highBound;
+	return x >= lowBound && x <= highBound;
+}
+
+const STATE = {
+	LOBBY: 0,
+	CHOICE: 1,
+	DRAW: 2,
+	END: 3,
 }
 
 class Room{
@@ -26,7 +32,7 @@ class Room{
 	}
 
 	resetState(){
-		this.state = "lobby";
+		this.state = STATE.LOBBY;
 		this.currentPlayer = null;
 		this.currentPlayerName = '';
 		this.word = "";
@@ -47,13 +53,12 @@ class Room{
 	}
 
 	updateStatus(){
-		if(this.state != "lobby" && this.playerCount < 2){
-			this.resetState();
+		if(this.state !== STATE.LOBBY && this.playerCount < 2){
 			//stop game
-		}else if(this.state == "lobby" && this.playerCount > 1){
+			this.resetState();
+		}else if(this.state === STATE.LOBBY && this.playerCount > 1){
 			//start game
 			console.log("starting");
-
 			this.timer = setTimeout(()=>{this.newRound()}, 300);
 		}
 	}
@@ -90,9 +95,9 @@ class Room{
 
 		socket.emit('connected');
 		socket.emit('roominfo', {players: this.players.map(x=>x.publicInfo()), round: this.round});
-		if(this.state == 'choice'){
+		if(this.state === STATE.CHOICE){
 		  socket.emit('choosing', this.currentPlayerName);
-		}else if(this.state == 'draw'){
+		}else if(this.state === STATE.DRAW){
 		  socket.emit('secret', {time: this.startTime, word: this.hiddenWord, drawing: this.currentPlayer});
 		}
 		socket.join(this.id);
@@ -127,7 +132,7 @@ class Room{
 	start(){
 		console.log("triggered: start()");
 		this.startTime = Date.now();
-		this.state = "draw";
+		this.state = STATE.DRAW;
 		let secret = {time: this.startTime, word: this.hiddenWord, drawing: this.currentPlayer}
 		for(let x of this.players){
 			if(x.id!=this.currentPlayer){
@@ -144,9 +149,11 @@ class Room{
 		console.log("triggered: end()");
 		console.log(reason, Date.now()-this.startTime)
 		clearTimeout(this.timer)
+		this.timer = null;
+
 		//display end screen;
 		//return to choice
-		this.state = "end";
+		this.state = STATE.END;
 		//send results in descending order
 		let deltas = this.players.filter((x)=>x.id!=this.currentPlayer)
 									.map((x)=>{return {name: x.name, change: x.scoreDelta}});
@@ -188,7 +195,12 @@ class Room{
 		if(!Array.isArray(data) || data.length != 3 || !data.all(Number.isInteger)){
 		  return -1
 		}
-		if(socket.id == this.currentPlayer && inBounds(data[0], 0 ,3) && inBounds(data[1], 0, 22) && inBounds(data[2], 0, 4)){
+		if(
+			socket.id == this.currentPlayer &&
+			inBounds(data[0], 0 ,3) &&
+			inBounds(data[1], 0, 22) &&
+			inBounds(data[2], 0, 4)
+		) {
 		  this.tool(clear);
 		  socket.to(roomcode).emit('clear', data);
 		}
@@ -209,21 +221,21 @@ class Room{
 				break
 			}
 		}
-		if(player == null){
+		if(player == null) {
 			console.log("All players have particpated, starting new round");
 			this.newRound();
-		}else{
-			this.state = "choice";
+		}else {
+			this.state = STATE.CHOICE;
 			//select three words
-			for(let i = 0; i < 3; i++){
+			for(let i = 0; i < 3; i++) {
 				this.choices[i] = wordlist.sample();
 			}
 
 			this.currentPlayer = player.id;
 			this.currentPlayerName = player.name;
 			
-			for(let p of this.players){
-				if(p.id != player.id){
+			for(let p of this.players) {
+				if(p.id != player.id) {
 					this.io.to(p.id).emit('choosing', player.name);
 					console.log(p.id)
 				}
@@ -233,13 +245,15 @@ class Room{
 	}
 
 	selectChoice(choice, socket) {
-		if(!Number.isInteger(choice) || choice < 0  || choice> 2){
-		  return -1
-		}
-		let player = this.getPlayer(socket.id);
-		if(this.state != "choice" || socket.id != this.currentPlayer){
+		if(!Number.isInteger(choice) || !inBounds(choice, 0, 2)) {
 		  return -1;
 		}
+
+		let player = this.getPlayer(socket.id);
+		if(this.state !== STATE.CHOICE || socket.id !== this.currentPlayer) {
+		  return -1;
+		}
+
 		this.word = this.choices[choice];
 		this.hiddenWord = this.word.replace(/\S/g, '_');
 		this.compareWord = this.word.toLowerCase();
@@ -253,28 +267,37 @@ class Room{
 		}
 		let player = this.getPlayer(socket.id);
 
-		//if player is the drawer or has guessed correctly
-		if(this.state == 'draw' && (player.id == this.currentPlayer || player.scoreDelta > 0)){
-			const message = {name: player.name, content: data, color: '#7dad3f'};
-			for(p of this.players.filter(x=>x.scoreDelta>0)){
-				io.to(p.id).emit('message', message);
-			}
-		}else if(this.state == 'draw' && data.trim().toLowerCase() == this.word){
-			//Player guessed the right word!
-			player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
-			player.score += player.scoreDelta
-			this.io.to(this.id).emit('message', {content: `${player.name} guessed the word!`, color: '#56ce27'});
-			this.io.to(this.is).emit('update', {id: player.id, score:player.score});
+		if(this.state === STATE.DRAW) {
+		//if player is the drawer or has guessed correctly 
+			if(player.id === this.currentPlayer || player.scoreDelta) {
+				const message = {name: player.name, content: data, color: '#7dad3f'};
+				for(p of this.players.filter(x=>x.scoreDelta)) {
+					io.to(p.id).emit('message', message);
+				}
+				return 0;
+			} else if(data.trim().toLowerCase() === this.word) {
+				//Player guessed the right word!
+				player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
+				player.score += player.scoreDelta
 
-			//check all players have scored
-			if(this.players.filter((x)=>x.scoreDelta>0).length == this.playerCount - 1) {
-				clearTimeout(this.timer);
-				this.end('Everybody guessed the word!');
-			}
-		}else{
-			//emit generic chat message
-			this.io.to(this.id).emit('message', {name: player.name, content: data});
+				this.io.to(this.id).emit('message', {
+					content: `${player.name} guessed the word!`,
+					color: '#56ce27'}
+				);
+				this.io.to(this.is).emit('update', {
+					id: player.id,
+					score:player.score
+				});
+
+				//check all players have scored
+				if(this.players.filter(x=>x.scoreDelta).length == this.playerCount - 1) {
+					this.end('Everybody guessed the word!');
+				}
+				return 0;
+			} 
 		}
+			//emit generic chat message
+		this.io.to(this.id).emit('message', {name: player.name, content: data});
 	}
 }
 
