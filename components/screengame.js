@@ -17,6 +17,7 @@ class ScreenGame extends React.Component {
       timer: 80,
       end: null,
       players: [],
+      drawer: null,
       drawing: false,
     };
   }
@@ -39,8 +40,6 @@ class ScreenGame extends React.Component {
     for(let player of players) {
       updated.push({...player, rank: ranks.indexOf(player.score) + 1});
     }
-    console.log(ranks)
-    console.log(updated)
     return updated;
   }
 
@@ -56,6 +55,7 @@ class ScreenGame extends React.Component {
         word: data.word,
         timer: 80,
         end: data.time,
+        drawer: data.drawing,
         drawing: this.socket.id == data.drawing,
       })
 
@@ -75,6 +75,8 @@ class ScreenGame extends React.Component {
     this.socket.on('end', (data)=>{
       clearInterval(this.timerID);
       this.setState({
+        drawer: null,
+        drawing: false,
         overlay: true,
         reason: data.reason,
         scores: data.scores,
@@ -150,7 +152,7 @@ class ScreenGame extends React.Component {
           <div className="gameHeaderButtons"/>
         </div>
         <div className="containerGame">
-          <PlayerList players={this.state.players}/>
+          <PlayerList players={this.state.players} drawer={this.state.drawer}/>
           <Canvas overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores} drawing={this.state.drawing}/>
           <div id="containerSidebar">
             <div id="containerFreespace"/>

@@ -16,7 +16,7 @@ class PlayerList extends React.Component {
   renderPlayer(player){
     let isCurrentPlayer = player.id == this.socket.id;
     return (
-      <div className={`player ${player.change>0?"guessed":"guessing"}`} key={player.id}>
+      <div className={`player ${player.change>0&&player.id!==this.props.drawer?"guessed":"guessing"}`} key={player.id}>
         <div className="rank">
           #{player.rank}
         </div>

@@ -335,11 +335,9 @@ class Room{
 					content: data,
 					color: '#7dad3f'
 				};
-				for(p of this.players.filter(x=>x.scoreDelta)) {
-					io.to(p.id).emit('message', message);
+				for(let player of this.players.filter(x=>x.scoreDelta || x.id === this.currentPlayer)) {
+					this.io.to(player.id).emit('message', message);
 				}
-				//emit to drawer
-				socket.emit('message', message);
 				return 0;
 			}
 
