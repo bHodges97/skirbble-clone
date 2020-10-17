@@ -4,6 +4,7 @@ class Toolbox extends React.Component {
   constructor(props) {
     super(props);
     this.renderColorItem = this.renderColorItem.bind(this);
+    this.changeColor = this.changeColor.bind(this);
     this.changeTool = this.changeTool.bind(this);
   }
 
@@ -13,11 +14,18 @@ class Toolbox extends React.Component {
 
   renderColorItem(x){
     return (
-      <div className="colorItem" style={{backgroundColor: TOOL.COLOR[x]}} key={x} data-type='color' data-value={x} onClick={this.changeTool}/>
+      <div className="colorItem" style={{backgroundColor: TOOL.COLOR[x]}} key={x} data-type='color' data-value={x} onClick={this.changeColor}/>
     )
   }
+  
+  changeColor(e) {
+    if(this.props.tool === TOOL.RUBBER) {
+      this.props.callback('tool', TOOL.PEN);
+    }
+    this.changeTool(e);
+  }
 
-  changeTool(e){
+  changeTool(e) {
     let current = e.target;
     while(current.dataset.type === undefined) {
       current=current.parentNode;

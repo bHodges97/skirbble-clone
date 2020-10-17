@@ -27,17 +27,14 @@ class Canvas extends React.Component {
     this.toolSelect = this.toolSelect.bind(this);
     this.floodFill = this.floodFill.bind(this);
     this.clear = this.clear.bind(this);
+    this.drawLineEvent = this.drawLineEvent.bind(this);
   }
 
   componentDidMount() {
     const ref = this.canvasRef.current;
-    //ref.width = ref.offsetWidth;
-    //ref.height = ref.offsetHeight;
     let ctx = ref.getContext('2d');
     let scaleX = ref.width/ref.offsetWidth; 
     let scaleY = ref.height/ref.offsetHeight;
-    //ref.width = ref.offsetWidth;
-    //ref.height = ref.offsetHeight;
     //why is react like this????
     //ctx is not defined if i just do this.context = ....
     this.setState({context: ctx, scaleX: scaleX, scaleY: scaleY});
@@ -53,27 +50,16 @@ class Canvas extends React.Component {
     ctx2.fillStyle = 'white';
     this.setState({ctx2: ctx2});
 
-    this.context.on('tool', (data) => {
-      this.setState({tool: data[0]})
-      if(data[0] != TOOL.RUBBER){
-        this.setState({color: data[1], width: data[2]}); 
-      }
+    this.context.on('fill', (data) => {
+      this.floodFill(...data);
     });
+
     this.context.on('draw', (data) => {
-      let x = data[0];
-      let y = data[1];
-      if(this.state.tool == TOOL.FILL){
-        this.floodFill(x,y);
-      }else{
-        if(this.x != null && this.y != null){
-          this.drawLine(this.x, this.y, x, y);
-        }
-        this.x = x;
-        this.y = y;
-        const ctx2 = this.state.ctx2;
-        ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
-      }
+      this.drawLine(...data);
+      const ctx2 = this.state.ctx2;
+      ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
     });
+
     this.context.on('clear', (data) => {
       this.clear();
     });
@@ -83,55 +69,56 @@ class Canvas extends React.Component {
     if(e.button!=0 || !this.props.drawing)return
     let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
     let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
-    this.context.emit('draw',[x, y]);
     if(this.state.tool !== TOOL.FILL) {
       this.x = x;
       this.y = y;
       this.isDrawing = true;
     }else {
-      this.floodFill(x,y);
+      this.floodFill(x, y, this.state.color);
+      this.context.emit('fill', [x, y, this.state.color]);
     }
   }
 
   mouseMove(e) {
-    if (this.props.drawing && this.isDrawing === true && this.state.tool !== TOOL.FILL) {
-      let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
-      let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
-      this.context.emit('draw',[x, y]);
-      this.drawLine(this.x, this.y, x, y);
-      this.x = x;
-      this.y = y;
+    if (this.props.drawing && this.isDrawing && this.state.tool !== TOOL.FILL) {
+      this.drawLineEvent(e);
     }
   }
 
   mouseUp(e) {
     if (this.props.drawing && this.isDrawing && this.state.tool!==TOOL.FILL) {
-      let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
-      let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
-      this.context.emit('draw',[this.x * this.state.scaleX,this.y * this.state.scaleY])
-      this.drawLine(this.x, this.y, x, y);
-      this.x = null;
-      this.y = null;
+      this.drawLineEvent(e);
       this.isDrawing = false;
       const ctx2 = this.state.ctx2;
       ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
     }
   }
 
-  drawLine(x0,y0,x1,y1){
+  drawLineEvent(e) {
+    let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
+    let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
+    let color = this.state.tool === TOOL.PEN ? this.state.color : 0;
+    this.context.emit('draw', [this.x, this.y, x, y, color, this.state.width]);
+    this.drawLine(this.x, this.y, x, y, color, this.state.width);
+    this.x = x;
+    this.y = y;
+  }
+
+  drawLine(x0, y0, x1, y1, color, lineWidth) {
+    color = TOOL.COLOR[color]
+    lineWidth = TOOL.WIDTH[lineWidth]
+
     const ctx = this.state.context;
     const ctx2 = this.state.ctx2;
     //draw line on hidden canvas as a mask for the actual canvas.
     //gets rid of fuzzy edges 
     let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
     let data = image.data;
-    let w = TOOL.WIDTH[this.state.width];
     let height = image.height;
     let width = image.width;
-    let color = this.state.tool===TOOL.PEN?TOOL.COLOR[this.state.color]:'#ffffff';
     ctx2.beginPath();
     ctx2.strokeStyle = color;
-    ctx2.lineWidth = w;
+    ctx2.lineWidth = lineWidth;
     ctx2.moveTo(x0, y0);
     ctx2.lineTo(x1, y1);
     ctx2.closePath();
@@ -139,11 +126,11 @@ class Canvas extends React.Component {
     let image2 = ctx2.getImageData(0,0,width,height);
     let d2 = image2.data;
 
-    let lx = Math.max(0, Math.min(x0,x1)-w);
-    let ly = Math.max(0, Math.min(y0,y1)-w);
+    let lx = Math.max(0, Math.min(x0,x1)-lineWidth);
+    let ly = Math.max(0, Math.min(y0,y1)-lineWidth);
     let min = 4 * (lx + ly * width);
-    let hx = Math.min(width, Math.max(x0,x1)+w);
-    let hy = Math.min(height, Math.max(y0,y1)+w);
+    let hx = Math.min(width, Math.max(x0,x1)+lineWidth);
+    let hy = Math.min(height, Math.max(y0,y1)+lineWidth);
     let max = 4 * (hx + hy * width);
 
     let newColor = this.hexToRgb(color);
@@ -165,7 +152,8 @@ class Canvas extends React.Component {
     return [r,g,b];
   }
 
-  floodFill(x,y) {
+  floodFill(x, y, color) {
+    color = TOOL.COLOR[color]
     const ctx = this.state.context;
 
     let image = ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height);
@@ -174,7 +162,7 @@ class Canvas extends React.Component {
     let width = image.width;
     let height = image.height;
     let target = 4*(x+y*width)
-    let newColor = this.hexToRgb(TOOL.COLOR[this.state.color]);
+    let newColor = this.hexToRgb(color);
     let oldColor = data.slice(target,target+3);
     let rowWidth = width * 4;
     let queue = [target]
@@ -215,11 +203,7 @@ class Canvas extends React.Component {
   }
 
   toolSelect(type, value) {
-    this.x = null;
-    this.y = null;
-    this.setState({[type]: value},()=>{
-      this.context.emit('tool', [this.state.tool,this.state.color,this.state.width]);
-    });
+    this.setState({[type]: value});
   }
 
   clear(){

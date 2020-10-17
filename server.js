@@ -38,10 +38,10 @@ io.on('connect', socket => {
 	}
   });
 
-  socket.on('tool', (data)=>{
+  socket.on('fill', (data)=>{
 	const clientrooms = Object.keys(socket.rooms);
 	if(clientrooms.length == 2) {
-	  rooms.get(clientrooms[1]).tool(data, socket);
+	  rooms.get(clientrooms[1]).fill(data, socket);
 	}
   });
 
@@ -49,7 +49,7 @@ io.on('connect', socket => {
   socket.on('clear', (data)=>{
 	const clientrooms = Object.keys(socket.rooms);
 	if(clientrooms.length == 2){
-	  rooms.get(clientrooms[1]).clear(data, socket);
+	  rooms.get(clientrooms[1]).clear(socket);
 	}
   });
 

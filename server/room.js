@@ -197,53 +197,47 @@ class Room{
 	}
 
 	draw(data, socket) {
-		if(!Array.isArray(data) || data.length != 2 || data.some(Number.isNaN)){
+		if(
+			socket.id !== this.currentPlayer ||
+			!Array.isArray(data) ||
+			data.length != 6 ||
+			!data.every(Number.isInteger) ||
+			!inBounds(data[0], 0, 800) ||
+			!inBounds(data[1], 0, 600) ||
+			!inBounds(data[2], 0, 800) ||
+			!inBounds(data[3], 0, 600) ||
+			!inBounds(data[4], 0, 22) ||
+			!inBounds(data[5], 0, 4) 
+		) {
+			console.log(data)
 			return -1
 		}
-		if(socket.id === this.currentPlayer && inBounds(data[0], 0, 800) && inBounds(data[1], 0, 600)){
-			if(this.memory.length) {
-				this.memory[this.memory.length-1].push(data[0]);
-				this.memory[this.memory.length-1].push(data[1]);
-			}
-			socket.to(this.id).emit('draw',data);
-		}
+		this.memory.push(data);
+		socket.to(this.id).emit('draw', data);
 	}
 
-	tool(data, socket) {
-		//format: array: [tool,color,width]
-		//tools: pen 0 rubber 1 fill 2
-		//color: 0 - 22
-		//width: 0 - 4
+	fill(data, socket) {
 		if(
-			socket.id !== currentPlayer ||
+			socket.id !== this.currentPlayer ||
 			!Array.isArray(data) ||
 			data.length != 3 ||
 			!data.every(Number.isInteger) ||
-			!inBounds(data[0], 0, 3) || 
-			!inBounds(data[1], 0, 22) ||
-			!inBounds(data[2], 0, 4)
+			!inBounds(data[0], 0, 800) || 
+			!inBounds(data[1], 0, 600) ||
+			!inBounds(data[2], 0, 22)
 		) {
 		  return -1;
 		}
 		this.memory.push(data);
-		socket.to(this.id).emit('tool',data);
+		socket.to(this.id).emit('fill',data);
 	}
 
-	clear(data, socket) {
-		if(
-			socket.id !== currentPlayer ||
-			!Array.isArray(data) ||
-			data.length != 3 ||
-			!data.every(Number.isInteger) ||
-			!inBounds(data[0], 0, 3) || 
-			!inBounds(data[1], 0, 22) ||
-			!inBounds(data[2], 0, 4)
-		) {
+	clear(socket) {
+		if(socket.id !== this.currentPlayer) {
 		  return -1;
 		}
-		this.memory = [data];
-		this.tool(data);
-		socket.to(this.id).emit('clear', data);
+		this.memory = [];
+		socket.to(this.id).emit('clear');
 	}
 
 	sendChoices(){
