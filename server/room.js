@@ -200,7 +200,7 @@ class Room{
 		if(!Array.isArray(data) || data.length != 2 || data.some(Number.isNaN)){
 			return -1
 		}
-		if(socket.id==this.currentPlayer && inBounds(data[0], 0, 800) && inBounds(data[1], 0, 600)){
+		if(socket.id === this.currentPlayer && inBounds(data[0], 0, 800) && inBounds(data[1], 0, 600)){
 			if(this.memory.length) {
 				this.memory[this.memory.length-1].push(data[0]);
 				this.memory[this.memory.length-1].push(data[1]);
@@ -215,17 +215,17 @@ class Room{
 
 	clear(data, socket){
 		this.memory = [data];
-		if(!Array.isArray(data) || data.length != 3 || !data.all(Number.isInteger)){
+		if(!Array.isArray(data) || data.length != 3 || !data.every(Number.isInteger)){
 		  return -1
 		}
 		if(
-			socket.id == this.currentPlayer &&
+			socket.id === this.currentPlayer &&
 			inBounds(data[0], 0 ,3) &&
 			inBounds(data[1], 0, 22) &&
 			inBounds(data[2], 0, 4)
 		) {
-		  this.tool(clear);
-		  socket.to(roomcode).emit('clear', data);
+		  this.tool(data);
+		  socket.to(this.id).emit('clear', data);
 		}
 	}
 

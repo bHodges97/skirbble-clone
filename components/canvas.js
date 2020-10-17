@@ -36,8 +36,8 @@ class Canvas extends React.Component {
     let ctx = ref.getContext('2d');
     let scaleX = ref.width/ref.offsetWidth; 
     let scaleY = ref.height/ref.offsetHeight;
-    ref.width = ref.offsetWidth;
-    ref.height = ref.offsetHeight;
+    //ref.width = ref.offsetWidth;
+    //ref.height = ref.offsetHeight;
     //why is react like this????
     //ctx is not defined if i just do this.context = ....
     this.setState({context: ctx, scaleX: scaleX, scaleY: scaleY});
@@ -54,14 +54,15 @@ class Canvas extends React.Component {
     this.setState({ctx2: ctx2});
 
     this.context.on('tool', (data) => {
+      console.log(data);
       this.setState({tool: data[0]})
       if(data[0] != TOOL.RUBBER){
         this.setState({color: data[1], width: data[2]}); 
       }
     });
     this.context.on('draw', (data) => {
-      let x = Math.round(data[0] / this.state.scaleX);
-      let y = Math.round(data[1] / this.state.scaleY);
+      let x = data[0];
+      let y = data[1];
       if(this.state.tool == TOOL.FILL){
         this.floodFill(x,y);
       }else{
@@ -70,6 +71,8 @@ class Canvas extends React.Component {
         }
         this.x = x;
         this.y = y;
+        const ctx2 = this.state.ctx2;
+        ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
       }
     });
     this.context.on('clear', (data) => {
@@ -79,10 +82,11 @@ class Canvas extends React.Component {
 
   mouseDown(e) {
     if(e.button!=0 || !this.props.drawing)return
-    let x = e.nativeEvent.offsetX;
-    let y = e.nativeEvent.offsetY;
-    this.context.emit('draw',[this.x * this.state.scaleX,this.y * this.state.scaleY])
-    if(this.state.tool != TOOL.FILL) {
+    let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
+    let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
+    console.log(x,this.state.scaleX);
+    this.context.emit('draw',[x, y]);
+    if(this.state.tool !== TOOL.FILL) {
       this.x = x;
       this.y = y;
       this.isDrawing = true;
@@ -93,9 +97,9 @@ class Canvas extends React.Component {
 
   mouseMove(e) {
     if (this.props.drawing && this.isDrawing === true && this.state.tool !== TOOL.FILL) {
-      let x = e.nativeEvent.offsetX;
-      let y = e.nativeEvent.offsetY;
-      this.context.emit('draw',[x * this.state.scaleX, y * this.state.scaleY])
+      let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
+      let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
+      this.context.emit('draw',[x, y]);
       this.drawLine(this.x, this.y, x, y);
       this.x = x;
       this.y = y;
@@ -104,9 +108,9 @@ class Canvas extends React.Component {
 
   mouseUp(e) {
     if (this.props.drawing && this.isDrawing && this.state.tool!==TOOL.FILL) {
-      let x = e.nativeEvent.offsetX;
-      let y = e.nativeEvent.offsetY;
-      this.context.emit('draw',[x * this.state.scaleX, y * this.state.scaleY])
+      let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
+      let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
+      this.context.emit('draw',[this.x * this.state.scaleX,this.y * this.state.scaleY])
       this.drawLine(this.x, this.y, x, y);
       this.x = null;
       this.y = null;
@@ -126,7 +130,7 @@ class Canvas extends React.Component {
     let w = TOOL.WIDTH[this.state.width];
     let height = image.height;
     let width = image.width;
-    let color = this.state.tool==TOOL.PEN?TOOL.COLOR[this.state.color]:'#ffffff';
+    let color = this.state.tool===TOOL.PEN?TOOL.COLOR[this.state.color]:'#ffffff';
     ctx2.beginPath();
     ctx2.strokeStyle = color;
     ctx2.lineWidth = w;
@@ -212,11 +216,13 @@ class Canvas extends React.Component {
     ctx.putImageData(image,0,0);
   }
 
-  toolSelect(e){
+  toolSelect(type, value) {
     this.x = null;
     this.y = null;
-    this.setState({[e.dataset.type]: e.dataset.value})
-    this.context.emit('tool',[this.state.tool,this.state.color,this.state.width]);
+    this.setState({[type]: value},()=>{
+      console.log(type, value);
+      this.context.emit('tool', [this.state.tool,this.state.color,this.state.width]);
+    });
   }
 
   clear(){
@@ -235,7 +241,7 @@ class Canvas extends React.Component {
           <Overlay overlay={this.props.overlay} text={this.props.text} choice={this.props.choice} reason={this.props.reason} scores={this.props.scores}/>
           }
         </div>
-        <Toolbox callback={this.toolSelect} clear={this.clear} show={this.props.drawing}/>
+        <Toolbox callback={this.toolSelect} clear={this.clear} show={this.props.drawing} width={this.state.width} tool={this.state.tool} color={this.state.color}/>
       </div>
     );
   }

@@ -4,7 +4,6 @@ class Toolbox extends React.Component {
   constructor(props) {
     super(props);
     this.renderColorItem = this.renderColorItem.bind(this);
-    this.state = {tool: TOOL.PEN, width: 0,color: 11};
     this.changeTool = this.changeTool.bind(this);
   }
 
@@ -20,9 +19,12 @@ class Toolbox extends React.Component {
 
   changeTool(e){
     let current = e.target;
-    while(current.dataset.type == undefined)current=current.parentNode;
-    this.setState({[current.dataset.type]: current.dataset.value});
-    this.props.callback(current);
+    while(current.dataset.type === undefined) {
+      current=current.parentNode;
+    }
+    let type = current.dataset.type;
+    let value = Number.parseInt(current.dataset.value);
+    this.props.callback(type, value);
   };
 
   render() {
@@ -39,7 +41,7 @@ class Toolbox extends React.Component {
 
     return (
       <div className="containerToolbar" style={{visibility: this.props.show?'visible':'hidden'}}>
-        <div className="colorPreview" style={{backgroundColor: this.state.color}}>
+        <div className="colorPreview" style={{backgroundColor: this.props.color}}>
         </div>
         <div className="containerColorbox">
           <div className="containerColorColumn">
@@ -50,33 +52,33 @@ class Toolbox extends React.Component {
           </div>
         </div>
         <div className="containerTools">
-          <div className={`tool ${this.state.tool===TOOL.PEN?'toolActive':''}`} data-type='tool' data-value={TOOL.PEN} onClick={this.changeTool}>
+          <div className={`tool ${this.props.tool===TOOL.PEN?'toolActive':''}`} data-type='tool' data-value={TOOL.PEN} onClick={this.changeTool}>
             <img className="toolIcon" src="/pen.png"/>
           </div>
-          <div className={`tool ${this.state.tool===TOOL.RUBBER?'toolActive':''}`} data-type='tool' data-value={TOOL.RUBBER} onClick={this.changeTool}>
+          <div className={`tool ${this.props.tool===TOOL.RUBBER?'toolActive':''}`} data-type='tool' data-value={TOOL.RUBBER} onClick={this.changeTool}>
             <img className="toolIcon" src="/rubber.png"/>
           </div>
-          <div className={`tool ${this.state.tool===TOOL.FILL?'toolActive':''}`} data-type='tool' data-value={TOOL.FILL} onClick={this.changeTool}>
+          <div className={`tool ${this.props.tool===TOOL.FILL?'toolActive':''}`} data-type='tool' data-value={TOOL.FILL} onClick={this.changeTool}>
             <img className="toolIcon" src="/filltool.png"/>
           </div>
         </div>
         <div className="containerBrushSizes">
-          <div className={`brushSize ${this.state.width==0?'toolActive':''}`} data-type='width' data-value={0} onClick={this.changeTool}>
+          <div className={`brushSize ${this.props.width==0?'toolActive':''}`} data-type='width' data-value={0} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size6"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==1?'toolActive':''}`} data-type='width' data-value={1} onClick={this.changeTool}>
+          <div className={`brushSize ${this.props.width==1?'toolActive':''}`} data-type='width' data-value={1} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size16"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==2?'toolActive':''}`} data-type='width' data-value={2} onClick={this.changeTool}>
+          <div className={`brushSize ${this.props.width==2?'toolActive':''}`} data-type='width' data-value={2} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size30"/>
             </div>
           </div>
-          <div className={`brushSize ${this.state.width==3?'toolActive':''}`} data-type='width' data-value={3} onClick={this.changeTool}>
+          <div className={`brushSize ${this.props.width==3?'toolActive':''}`} data-type='width' data-value={3} onClick={this.changeTool}>
             <div className="sizeCenter">
               <div className="size size44"/>
             </div>
