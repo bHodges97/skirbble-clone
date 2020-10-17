@@ -49,7 +49,7 @@ class Toolbox extends React.Component {
 
     return (
       <div className="containerToolbar" style={{visibility: this.props.show?'visible':'hidden'}}>
-        <div className="colorPreview" style={{backgroundColor: this.props.color}}>
+        <div className="colorPreview" style={{backgroundColor: TOOL.COLOR[this.props.color]}}>
         </div>
         <div className="containerColorbox">
           <div className="containerColorColumn">

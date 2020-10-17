@@ -104,18 +104,34 @@ class Room{
 		socket.emit('connected');
 		socket.emit('roominfo', {players: this.players.map(x=>x.publicInfo()), round: this.round});
 		if(this.state === STATE.CHOICE){
-		  socket.emit('choosing', this.currentPlayerName);
+			socket.emit('choosing', this.currentPlayerName);
 		}else if(this.state === STATE.DRAW){
-		  socket.emit('secret', {
-			  time: this.getEndTime(),
-			  word: this.maskedWord,
-			  drawing: this.currentPlayer});
+			socket.emit('secret', {
+				time: this.getEndTime(),
+				word: this.maskedWord,
+				drawing: this.currentPlayer
+			});
+			if(this.memory.length) {
+				this.redraw(socket.id, 0);
+			}
 		}
 		socket.join(this.id);
 		socket.to(this.id).emit('playerjoined', player.publicInfo());
 		this.io.to(this.id).emit('message', {content: `${properties[0]} joined.`, color: '#56ce27'});
 
 		return this.playerCount - 1
+	}
+
+	redraw(player, index) {
+		if(
+			this.state === STATE.DRAW &&
+			this.memory.length &&
+			index < this.memory.length
+		) {
+			let next = this.memory[index];
+			this.io.to(player).emit(next.length==3?'fill':'draw',next);
+			setTimeout(()=>{this.redraw(player, index+1)}, 5);
+		}
 	}
 
 	//on player leave to room
