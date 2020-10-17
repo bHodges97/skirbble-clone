@@ -54,7 +54,6 @@ class Canvas extends React.Component {
     this.setState({ctx2: ctx2});
 
     this.context.on('tool', (data) => {
-      console.log(data);
       this.setState({tool: data[0]})
       if(data[0] != TOOL.RUBBER){
         this.setState({color: data[1], width: data[2]}); 
@@ -84,7 +83,6 @@ class Canvas extends React.Component {
     if(e.button!=0 || !this.props.drawing)return
     let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
     let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
-    console.log(x,this.state.scaleX);
     this.context.emit('draw',[x, y]);
     if(this.state.tool !== TOOL.FILL) {
       this.x = x;
@@ -220,7 +218,6 @@ class Canvas extends React.Component {
     this.x = null;
     this.y = null;
     this.setState({[type]: value},()=>{
-      console.log(type, value);
       this.context.emit('tool', [this.state.tool,this.state.color,this.state.width]);
     });
   }

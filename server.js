@@ -40,7 +40,6 @@ io.on('connect', socket => {
 
   //TODO: rewrite
   socket.on('tool', (data)=>{
-	console.log('tool', data);
 	//format: array: [tool,color,width]
 	//tools: pen 0 rubber 1 fill 2
 	//color: 0 - 22
