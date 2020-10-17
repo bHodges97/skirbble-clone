@@ -205,6 +205,15 @@ class Room{
 			scores: deltas,
 			word: this.word
 		});
+
+		//update drawer score
+		let player = this.getPlayer(this.currentPlayer);
+		player.score+=drawerScore;
+		this.io.to(this.id).emit('update', {
+			id: this.currentPlayer,
+			score: player.score,
+		});
+
 		//wait 5 seconds and then continue game loop
 		setTimeout(()=>{this.sendChoices()}, 5000);
 
@@ -344,7 +353,7 @@ class Room{
 					color: '#56ce27'
 				});
 
-				this.io.to(this.is).emit('update', {
+				this.io.to(this.id).emit('update', {
 					id: player.id,
 					score: player.score
 				});

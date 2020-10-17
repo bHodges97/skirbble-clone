@@ -18,7 +18,7 @@ class PlayerList extends React.Component {
     return (
       <div className={`player ${player.change>0?"guessed":"guessing"}`} key={player.id}>
         <div className="rank">
-          #1
+          #{player.rank}
         </div>
         <div className="info">
           <div className="name" style={{color: isCurrentPlayer && "#00f"}}>

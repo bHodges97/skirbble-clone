@@ -33,7 +33,18 @@ class ScreenGame extends React.Component {
     }
   }
 
-  componentDidMount(){
+  updateRanks(players) {
+    let ranks = players.map(x=>x.score).sort().reverse();
+    let updated = []
+    for(let player of players) {
+      updated.push({...player, rank: ranks.indexOf(player.score) + 1});
+    }
+    console.log(ranks)
+    console.log(updated)
+    return updated;
+  }
+
+  componentDidMount() {
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
       this.setState({
@@ -100,24 +111,26 @@ class ScreenGame extends React.Component {
     
     //player update listeners
     this.socket.on('roominfo', (data)=>{
-      this.setState({players: data.players, round: data.round})
+      let players = this.updateRanks(data.players);
+      this.setState({players: players, round: data.round})
     });
 
     this.socket.on('playerjoined', (data)=>{
-      let players = [...this.state.players, data]
+      let players = this.updateRanks([...this.state.players, data]);
       this.setState({players: players});
     });
 
     this.socket.on('playerleft', (data)=>{
-      let players = this.state.players.filter(x=>x.id!=data);
+      let players = this.updateRanks(this.state.players.filter(x=>x.id!=data));
       this.setState({players: players});
     });
 
     this.socket.on('update', (data)=>{
-      let players = [... this.state.players]
+      let players = this.updateRanks(this.state.players);
+      console.log("update",players)
       
       for(let i=0; i < players.length; i++){
-        if(players[i].id == data.id){
+        if(players[i].id === data.id){
           players[i] = {...players[i], score: data.score, change: 1}
         }
       }
