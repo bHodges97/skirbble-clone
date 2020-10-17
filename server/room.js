@@ -209,7 +209,7 @@ class Room{
 		}
 	}
 
-	tool(data){
+	tool(data, socket) {
 		//format: array: [tool,color,width]
 		//tools: pen 0 rubber 1 fill 2
 		//color: 0 - 22
@@ -219,30 +219,31 @@ class Room{
 			!Array.isArray(data) ||
 			data.length != 3 ||
 			!data.every(Number.isInteger) ||
-			!inBounds(data[1], 0, 3) || 
+			!inBounds(data[0], 0, 3) || 
 			!inBounds(data[1], 0, 22) ||
-			!inBounds(data[1], 0, 4)
-		){
+			!inBounds(data[2], 0, 4)
+		) {
 		  return -1;
 		}
 		this.memory.push(data);
 		socket.to(this.id).emit('tool',data);
 	}
 
-	clear(data, socket){
-		this.memory = [data];
-		if(!Array.isArray(data) || data.length != 3 || !data.every(Number.isInteger)){
-		  return -1
-		}
+	clear(data, socket) {
 		if(
-			socket.id === this.currentPlayer &&
-			inBounds(data[0], 0 ,3) &&
-			inBounds(data[1], 0, 22) &&
-			inBounds(data[2], 0, 4)
+			socket.id !== currentPlayer ||
+			!Array.isArray(data) ||
+			data.length != 3 ||
+			!data.every(Number.isInteger) ||
+			!inBounds(data[0], 0, 3) || 
+			!inBounds(data[1], 0, 22) ||
+			!inBounds(data[2], 0, 4)
 		) {
-		  this.tool(data);
-		  socket.to(this.id).emit('clear', data);
+		  return -1;
 		}
+		this.memory = [data];
+		this.tool(data);
+		socket.to(this.id).emit('clear', data);
 	}
 
 	sendChoices(){
