@@ -38,22 +38,10 @@ io.on('connect', socket => {
 	}
   });
 
-  //TODO: rewrite
   socket.on('tool', (data)=>{
-	//format: array: [tool,color,width]
-	//tools: pen 0 rubber 1 fill 2
-	//color: 0 - 22
-	//width: 0 - 4
 	const clientrooms = Object.keys(socket.rooms);
-	if(clientrooms.length != 2 || !Array.isArray(data) || data.length != 3 || !data.every(Number.isInteger)){
-	  console.log('error',clientrooms.length!=2 ,Array.isArray(data), data.length != 3, !data.every(Number.isInteger));
-	  return
-	}
-	let roomcode = clientrooms[1];
-	let room = rooms.get(roomcode);
-	if(socket.id==room.currentPlayer && data[0] >= 0 && data[0] <= 3 && data[1] >= 0 && data[1] <= 22 && data[2]>=0 &&  data[2] <= 4){
-	  room.tool(data);
-	  socket.to(roomcode).emit('tool',data);
+	if(clientrooms.length == 2) {
+	  rooms.get(clientrooms[1]).tool(data, socket);
 	}
   });
 

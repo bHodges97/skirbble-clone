@@ -210,7 +210,23 @@ class Room{
 	}
 
 	tool(data){
+		//format: array: [tool,color,width]
+		//tools: pen 0 rubber 1 fill 2
+		//color: 0 - 22
+		//width: 0 - 4
+		if(
+			socket.id !== currentPlayer ||
+			!Array.isArray(data) ||
+			data.length != 3 ||
+			!data.every(Number.isInteger) ||
+			!inBounds(data[1], 0, 3) || 
+			!inBounds(data[1], 0, 22) ||
+			!inBounds(data[1], 0, 4)
+		){
+		  return -1;
+		}
 		this.memory.push(data);
+		socket.to(this.id).emit('tool',data);
 	}
 
 	clear(data, socket){
