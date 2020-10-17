@@ -62,6 +62,13 @@ class Canvas extends React.Component {
 
     this.context.on('clear', (data) => {
       this.clear();
+      if(data) {
+        this.setState({
+          color: 11,
+          tool: TOOL.PEN,
+          width: 0,
+        });
+      }
     });
   }
 

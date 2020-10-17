@@ -163,6 +163,7 @@ class Room{
 	end(reason){
 		console.log("triggered: end()");
 		console.log(reason, Date.now()-this.startTime)
+		this.io.to(this.id).emit('clear',true);
 		clearTimeout(this.timer)
 		this.timer = null;
 
@@ -237,7 +238,7 @@ class Room{
 		  return -1;
 		}
 		this.memory = [];
-		socket.to(this.id).emit('clear');
+		socket.to(this.id).emit('clear', false);
 	}
 
 	sendChoices(){
