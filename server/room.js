@@ -73,6 +73,12 @@ class Room{
 			//start game
 			console.log("starting");
 			this.timer = setTimeout(()=>{this.newRound()}, 300);
+		}else if(
+			this.state === GAME.DRAW &&
+			this.players.filter(x=>x.scoreDelta).length == this.playerCount - 1
+		) {
+			clearTimeout(this.timer);
+			this.end('Everybody guessed the word!');
 		}
 	}
 
