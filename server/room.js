@@ -226,14 +226,13 @@ class Room{
 		if(
 			socket.id !== this.currentPlayer ||
 			!Array.isArray(data) ||
-			data.length != 6 ||
+			data.length != 5 ||
 			!data.every(Number.isInteger) ||
 			!inBounds(data[0], 0, 800) ||
 			!inBounds(data[1], 0, 600) ||
 			!inBounds(data[2], 0, 800) ||
 			!inBounds(data[3], 0, 600) ||
-			!inBounds(data[4], 0, 22) ||
-			!inBounds(data[5], 0, 4) 
+			!inBounds(data[4], 0, 91)  //(22<<2)+4
 		) {
 			console.log(data)
 			return -1

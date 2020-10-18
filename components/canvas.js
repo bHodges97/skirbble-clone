@@ -55,6 +55,8 @@ class Canvas extends React.Component {
     });
 
     this.context.on('draw', (data) => {
+      data[5] = data[4] & 3;
+      data[4] = data[4] >> 2;
       this.drawLine(...data);
       const ctx2 = this.state.ctx2;
       ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
@@ -105,7 +107,7 @@ class Canvas extends React.Component {
     let x = ~~(e.nativeEvent.offsetX * this.state.scaleX);
     let y = ~~(e.nativeEvent.offsetY * this.state.scaleY);
     let color = this.state.tool === TOOL.PEN ? this.state.color : 0;
-    this.context.emit('draw', [this.x, this.y, x, y, color, this.state.width]);
+    this.context.emit('draw', [this.x, this.y, x, y, (color<<2) + this.state.width]);
     this.drawLine(this.x, this.y, x, y, color, this.state.width);
     this.x = x;
     this.y = y;
