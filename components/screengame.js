@@ -24,8 +24,9 @@ class ScreenGame extends React.Component {
 
   tick(){
     if(this.state.end) {
+      let timeleft = ~~((this.state.end - Date.now()) / 1000);
       this.setState({
-        timer: Math.max(0, ~~((this.state.end - Date.now()) / 1000)),
+        timer: Math.max(0, Math.min(this.state.timer, timeleft)),
       })
     } else {
       this.setState({
@@ -53,12 +54,16 @@ class ScreenGame extends React.Component {
         reason: '',
         scores: undefined,
         word: data.word,
-        timer: 80,
-        end: data.time,
         drawer: data.drawing,
         drawing: this.socket.id == data.drawing,
       })
+    });
 
+    this.socket.on('timer', (data)=>{
+      this.setState({
+        timer: data.time,
+        end: data.end,
+      });
       this.timerID = setInterval(
         () => this.tick(), 100
       );

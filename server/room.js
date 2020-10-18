@@ -38,10 +38,6 @@ class Room{
 		this.memory = []
 	}
 
-	getEndTime(){
-		return this.startTime + this.drawTime * 1000;
-	}
-
 	getPlayer(id) {
 		return this.players.filter(x=>x.id===id).pop()
 	}
@@ -57,7 +53,9 @@ class Room{
 		this.round = 0;
 		this.image = "";
 		this.startTime = Date.now();
-		this.drawTime = 80;
+		this.endTime = null;
+		this.drawTime = 80;//80 seconds
+		this.choiceTime = 15;
 		this.memory = []
 		clearTimeout(this.timer);
 		this.timer = null;
@@ -114,10 +112,10 @@ class Room{
 			socket.emit('choosing', this.currentPlayerName);
 		}else if(this.state === STATE.DRAW){
 			socket.emit('secret', {
-				time: this.getEndTime(),
 				word: this.maskedWord,
 				drawing: this.currentPlayer
 			});
+			this.io.to(player.id).emit('timer', {time: this.countDown, end:this.endTime});
 			if(this.memory.length) {
 				this.redraw(socket.id, 0);
 			}
@@ -161,10 +159,8 @@ class Room{
 	//game timer
 	start(){
 		console.log("triggered: start()");
-		this.startTime = Date.now();
 		this.state = STATE.DRAW;
 		let secret = {
-			time: this.getEndTime(),
 			word: this.maskedWord,
 			drawing: this.currentPlayer
 		}
@@ -180,6 +176,10 @@ class Room{
 			color: COLOR.BLUE
 		});
 		//count down 60 seconds
+		this.startTime = Date.now();
+		this.endTime = this.startTime + this.drawTime * 1000;
+		this.countDown = this.drawTime;
+		this.io.to(this.id).emit('timer', {time: this.countDown, end:this.endTime});
 		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
 	}
 
@@ -308,23 +308,37 @@ class Room{
 			}
 			this.io.to(player.id).emit('choice', this.choices);
 		}
+		this.startTime = Date.now()
+		this.endTime = this.startTime + this.choiceTime * 1000;
+		this.countDown = this.choiceTime
+		this.io.to(this.id).emit('timer', {time: this.countDown, end:this.endTime});
+		this.timer = setTimeout(()=>{
+			if(this.state === STATE.CHOICE) {
+				this.setWord(this.choices.sample());
+			}
+
+		}, 15000);
+	}
+
+	setWord(word){
+		this.word = word;
+		this.maskedWord = this.word.replace(/\S/g, '_');
+		this.lowerCaseWord = this.word.toLowerCase();
+		this.choices = ['','',''];
+		this.start();
 	}
 
 	selectChoice(choice, socket) {
 		if(!Number.isInteger(choice) || !inBounds(choice, 0, 2)) {
 		  return -1;
 		}
+		clearTimeout(this.timer);
 
 		let player = this.getPlayer(socket.id);
 		if(this.state !== STATE.CHOICE || socket.id !== this.currentPlayer) {
 		  return -1;
 		}
-
-		this.word = this.choices[choice];
-		this.maskedWord = this.word.replace(/\S/g, '_');
-		this.lowerCaseWord = this.word.toLowerCase();
-		this.choices = ['','',''];
-		this.start();
+		this.setWord(this.choices[choice]);
 	}
 
 	message(data, socket) {
