@@ -18,6 +18,8 @@ const STATE = {
 	CHOICE: 1,
 	DRAW: 2,
 	END: 3,
+	GAMEEND: 4,
+
 }
 
 const COLOR = {
@@ -34,6 +36,7 @@ class Room{
 		//game loop: lobby -> choice -> draw -> end
 		this.players = [];
 		this.playerCount = 0;
+		this.roundCount = 3;
 		this.resetState();
 		this.memory = []
 	}
@@ -74,7 +77,7 @@ class Room{
 			console.log("starting");
 			this.timer = setTimeout(()=>{this.newRound()}, 300);
 		}else if(
-			this.state === GAME.DRAW &&
+			this.state === STATE.DRAW &&
 			this.players.filter(x=>x.scoreDelta).length == this.playerCount - 1
 		) {
 			clearTimeout(this.timer);
@@ -84,6 +87,14 @@ class Room{
 
 	newRound(){
 		this.round += 1;
+
+		if(this.round > this.roundCount) {
+			this.round = 0;
+			this.io.to(this.id).emit('gameEnd');
+			this.state = STATE.GAMEEND
+			setTimeout(()=>{this.newRound()}, 5000);
+		}
+
 		console.log("Round: ", this.round);
 		for(let player of this.players){
 			player.participated = false;
