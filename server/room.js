@@ -20,6 +20,13 @@ const STATE = {
 	END: 3,
 }
 
+const COLOR = {
+	GREEN: '#7DAD3F',
+	LIME: '#56CE27',
+	ORANGE: '#CE4F0A',
+	BLUE: '#3975CE',
+}
+
 class Room{
 	constructor(id,io){
 		this.id = id;
@@ -117,7 +124,7 @@ class Room{
 		}
 		socket.join(this.id);
 		socket.to(this.id).emit('playerjoined', player.publicInfo());
-		this.io.to(this.id).emit('message', {content: `${properties[0]} joined.`, color: '#56ce27'});
+		this.io.to(this.id).emit('message', {content: `${properties[0]} joined.`, color: COLOR.LIME});
 
 		return this.playerCount - 1
 	}
@@ -144,7 +151,7 @@ class Room{
 				this.updateStatus()
 
 				socket.to(this.id).emit('playerleft', socket.id);
-				socket.to(this.id).emit('message', {content: `${name} left.`, color: '#ce4f0a'});
+				socket.to(this.id).emit('message', {content: `${name} left.`, color: COLOR.ORANGE});
 				return i;
 			}
 		}
@@ -170,7 +177,7 @@ class Room{
 		this.io.to(this.currentPlayer).emit('secret', secret);
 		this.io.to(this.id).emit('message', {
 			content: `${this.currentPlayerName} is now drawing!`,
-			color: '#3975ce'
+			color: COLOR.BLUE
 		});
 		//count down 60 seconds
 		this.timer = setTimeout(()=>{this.end("Time is up!")}, this.drawTime * 1000);
@@ -232,7 +239,7 @@ class Room{
 			!inBounds(data[1], 0, 600) ||
 			!inBounds(data[2], 0, 800) ||
 			!inBounds(data[3], 0, 600) ||
-			!inBounds(data[4], 0, 91)  //(22<<2)+4
+			!inBounds(data[4], 0, 91)  //(22<<2)+ 4 (right most 2 bits for width)
 		) {
 			console.log(data)
 			return -1
@@ -332,7 +339,7 @@ class Room{
 				const message = {
 					name: player.name,
 					content: data,
-					color: '#7dad3f'
+					color: COLOR.GREEN
 				};
 				for(let player of this.players.filter(x=>x.scoreDelta || x.id === this.currentPlayer)) {
 					this.io.to(player.id).emit('message', message);
@@ -347,7 +354,7 @@ class Room{
 
 				this.io.to(this.id).emit('message', {
 					content: `${player.name} guessed the word!`,
-					color: '#56ce27'
+					color: COLOR.LIME
 				});
 
 				this.io.to(this.id).emit('update', {
