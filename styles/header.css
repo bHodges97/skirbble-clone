@@ -7,6 +7,13 @@
   flex: 1 1 auto;
 }
 
+.logoAvatarContainer {
+  margin-top: -18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
+
 .header {
   width: 100%;
   min-height: 50px;
