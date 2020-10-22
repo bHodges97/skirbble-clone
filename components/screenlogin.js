@@ -49,7 +49,7 @@ class ScreenLogin extends React.Component {
           <div className="loginPanelContent" style={{"padding": "8px", "marginBottom": "4px"}}>
             <form onSubmit={this.joinGame}>
               <div style={{"display": "flex"}}>
-                <input id="inputName" className="formFontrol" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32" value={this.state.name} onChange={this.handleChange}/>
+                <input id="inputName" className="formControl" type="text" autoComplete="off" placeholder="Enter your name" maxLength="32" value={this.state.name} onChange={this.handleChange}/>
                 <select id="loginLanguage" className="formControl">
                   <option>English</option>
                 </select>
