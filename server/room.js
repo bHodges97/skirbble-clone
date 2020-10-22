@@ -35,7 +35,7 @@ class Room{
 		//game loop: lobby -> choice -> draw -> end
 		this.players = [];
 		this.playerCount = 0;
-		this.roundLimit = 3;
+		this.roundLimit = 1;
 		this.resetState();
 		this.memory = []
 	}
@@ -45,7 +45,6 @@ class Room{
 	}
 
 	resetState(){
-		this.state = STATE.LOBBY;
 		this.currentPlayer = null;
 		this.currentPlayerName = '';
 		this.word = "";
@@ -73,6 +72,7 @@ class Room{
 		if(this.state !== STATE.LOBBY && this.playerCount < 2){
 			//stop game
 			this.resetState();
+			this.state = STATE.LOBBY;
 		}else if(this.state === STATE.LOBBY && this.playerCount > 1){
 			//start game
 			console.log("starting");
@@ -90,10 +90,12 @@ class Room{
 		this.round += 1;
 
 		if(this.round > this.roundLimit) {
+			console.log("game ended",this.round)
+			this.state = STATE.GAMEEND
 			this.round = 0;
 			this.io.to(this.id).emit('gameEnd');
-			this.state = STATE.GAMEEND
 			this.resetState();
+			clearTimeout(this.timer);
 			setTimeout(()=>{this.newRound()}, 10000);
 			return;
 		}
@@ -310,6 +312,7 @@ class Room{
 		if(player == null) {
 			console.log("All players have particpated, starting new round");
 			this.newRound();
+			return;
 		}else {
 			this.state = STATE.CHOICE;
 			//select three words

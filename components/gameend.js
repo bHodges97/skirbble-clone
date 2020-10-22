@@ -36,7 +36,7 @@ class GameEnd extends React.Component {
             <div className="avatarContainer">
               <Avatar style="avatarFit" scale={48} hat={x.hat} color={x.color} face={x.face}/>
             </div>
-            <div className="name">x.name</div>
+            <div className="name">{x.name}</div>
           </div>
           <div className='rank'>
             #{x.rank}
