@@ -31,6 +31,14 @@
   border-radius: 2px;
 }
 
+#loginAvatarCustomizerRandomize {
+    cursor: pointer;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    opacity: .6;
+}
+
 .avatarContainer {
   flex: 0 0 auto;
   width: 96px;

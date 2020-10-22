@@ -150,6 +150,11 @@ class ScreenGame extends React.Component {
 
     this.socket.on('playerleft', (data)=>{
       let players = this.updateRanks(this.state.players.filter(x=>x.id!=data));
+      if(player.length === 1) {
+        this.setState({
+          gameState: 'lobby',
+        })
+      }
       this.setState({players: players});
     });
 
