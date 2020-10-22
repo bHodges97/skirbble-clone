@@ -304,6 +304,40 @@
         display: flex;
         flex-direction: row;
         align-items: flex-start;
+
+        .rank {
+          height: 96px;
+          line-height: 96px;
+        }
+
+        .rank1 {
+          color: gold;
+          font-size: 38px;
+        }
+
+        .rank2 {
+          color: silver;
+          font-size: 30px;
+          font-size: 22px;
+        }
+
+        .rank-3 {
+          color: #8B4513;
+          font-size: 22px;
+        }
+
+        .name {
+          flex: 0 0 auto;
+          text-align: center;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 700;
+          z-index: 1;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow:ellipsis;
+          max-width: 100px;
+        }
       }
 
       .gameEndContainerPlayers, .gameEndContainerPlayersBest {

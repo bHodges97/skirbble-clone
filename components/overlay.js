@@ -6,14 +6,13 @@ class Overlay extends React.Component {
     super(props);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.socket = this.context;
   }
 
-
   render() {
     return (
-      <div id="overlay" style={{opacity: this.props.gameState!=='drawing'?"1":"0"}}>
+      <div id="overlay" style={{opacity: this.props.gameState!=='drawing'&&this.props.gameState!=='lobby'?"1":"0"}}>
         <div className="content" style={{bottom: "0%"}}>
           {this.props.text != "" &&
             <div className="text">
@@ -42,10 +41,14 @@ class Overlay extends React.Component {
           }
           {this.props.gameState === 'roundEnd' &&
             <div className="revealContainer">
-              {this.props.players.map((x,i)=>
+              {[...this.props.players].sort((a,b)=>(b.change-a.change)).map((x,i)=>
                 <div className="player" key={i}>
-                <div className="name">{x.name}</div>
-                <div className="score" style={{color: x.change==0?'#e81300':'#07ea30'}}>{x.change==0?x.change:'+'+x.change}</div> 
+                  <div className="name">
+                    {x.name}
+                  </div>
+                  <div className="score" style={{color: x.change==0?'#e81300':'#07ea30'}}>
+                    {x.change==0?x.change:'+'+x.change}
+                  </div> 
                 </div>
               )}
             </div>

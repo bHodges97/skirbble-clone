@@ -12,7 +12,7 @@ class GameEnd extends React.Component {
 
   render() {
     return (
-      <div className="containerGameEnd" >
+      <div className="gameEndContainer">
       </div>
     )
   }

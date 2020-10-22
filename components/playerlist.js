@@ -9,7 +9,7 @@ class PlayerList extends React.Component {
     this.renderPlayer = this.renderPlayer.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.socket = this.context;
   }
 
