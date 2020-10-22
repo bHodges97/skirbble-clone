@@ -306,8 +306,12 @@
         align-items: flex-start;
 
         .rank {
-          height: 96px;
-          line-height: 96px;
+          height: 48px;
+          display: inline-block;
+          color: #fff;
+          font-size: 15px;
+          line-height: 48px;
+          font-weight:700;
         }
 
         .rank1 {
@@ -318,7 +322,6 @@
         .rank2 {
           color: silver;
           font-size: 30px;
-          font-size: 22px;
         }
 
         .rank-3 {
@@ -338,6 +341,13 @@
           text-overflow:ellipsis;
           max-width: 100px;
         }
+
+        .left {
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
       }
 
       .gameEndContainerPlayers, .gameEndContainerPlayersBest {
@@ -352,14 +362,27 @@
       .gameEndContainerPlayersBest {
         margin-bottom: 4px;
         margin-top: 16px;
+
+        .rank {
+          height: 96px;
+          line-height: 96px;
+        }
+
+        .avatarContainer {
+          width: 96px;
+          height: 96px;
+        }
+      }
+      
+      .gamemEndContainerPlayers {
+        .avatarContainer {
+          width: 96px;
+          height: 96px;
+        }
       }
 
-      .gameEndPlayer {
-        flex: 1 1 auto;
-        margin: 8px;
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
+      .avatarContainer {
+        display: inline-block;
       }
     }
   }

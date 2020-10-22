@@ -35,7 +35,7 @@ class Room{
 		//game loop: lobby -> choice -> draw -> end
 		this.players = [];
 		this.playerCount = 0;
-		this.roundCount = 3;
+		this.roundLimit = 3;
 		this.resetState();
 		this.memory = []
 	}
@@ -64,6 +64,8 @@ class Room{
 
 		for(let player of this.players){
 			player.participated = false;
+			player.score = 0;
+			player.scoreDelta = 0;
 		}
 	}
 
@@ -87,11 +89,13 @@ class Room{
 	newRound(){
 		this.round += 1;
 
-		if(this.round > this.roundCount) {
+		if(this.round > this.roundLimit) {
 			this.round = 0;
 			this.io.to(this.id).emit('gameEnd');
 			this.state = STATE.GAMEEND
-			setTimeout(()=>{this.newRound()}, 5000);
+			this.resetState();
+			setTimeout(()=>{this.newRound()}, 10000);
+			return;
 		}
 
 		console.log("Round: ", this.round);
@@ -100,7 +104,7 @@ class Room{
 		}
 		this.io.to(this.id).emit("round", this.round);
 
-		this.timer = setTimeout(()=>{this.sendChoices()}, 300);
+		this.timer = setTimeout(()=>{this.sendChoices()}, 2500);
 	}
 
 	
