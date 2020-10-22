@@ -20,6 +20,8 @@ class ScreenGame extends React.Component {
       drawer: null,
       drawing: false,
     };
+    this.resetChange = this.resetChange.bind(this);
+    this.resetScore = this.resetScore.bind(this);
   }
 
   tick(){
@@ -42,6 +44,22 @@ class ScreenGame extends React.Component {
       updated.push({...player, rank: ranks.indexOf(player.score) + 1});
     }
     return updated;
+  }
+
+  resetChange() {
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        players[i] = {...players[i], change: 0}
+      }
+      this.setState({players: players});
+  }
+
+  resetScore() {
+      let players = [... this.state.players]
+      for(let i = 0;i < players.length; i++){;
+        players[i] = {...players[i], change: 0, score: 0}
+      }
+      this.setState({players: players});
   }
 
   componentDidMount() {
@@ -75,7 +93,7 @@ class ScreenGame extends React.Component {
         text: "Round: " + data,
       });
     });
-
+    
     this.socket.on('end', (data)=>{
       clearInterval(this.timerID);
       this.setState({
@@ -87,12 +105,6 @@ class ScreenGame extends React.Component {
         timer: 0
       })
 
-      let players = [... this.state.players]
-      for(let i = 0;i < players.length; i++){;
-        players[i] = {...players[i], change: 0}
-        break;
-      }
-      this.setState({players: players});
     })
 
     this.socket.on('gameEnd', (data)=>{
@@ -101,13 +113,13 @@ class ScreenGame extends React.Component {
       });
     });
 
-
     this.socket.on('choosing', (data)=>{
       this.setState({
         gameState: 'choosing',
         text: `${data} is choosing a word`,
         reason: '',
       })
+      this.resetChange();
     });
 
     this.socket.on('choice', (data)=>{
@@ -117,6 +129,7 @@ class ScreenGame extends React.Component {
         choice: data,
         reason: '',
       })
+      this.resetChange();
     });
     
     //player update listeners
@@ -143,7 +156,7 @@ class ScreenGame extends React.Component {
           players[i] = {
             ...players[i],
             score: data.score,
-            change: data.score-this.state.players[i].score
+            change: data.score-this.state.players[i].score,
           };
         }
       }
