@@ -387,7 +387,20 @@ class Room{
 				return 0;
 			}
 
-			if(data.trim().toLowerCase() === this.lowerCaseWord) {
+			//check simularity
+			let guess = data.trim().toLowerCase();
+			let count = 0;
+			for(let i = 0; i < this.lowerCaseWord.length; i++) { 
+				if (guess[i] === this.lowerCaseWord[i]) {
+					count++;
+				}
+			}
+			//check word length
+			if(guess.length > this.lowerCaseWord.length) {
+				count -= (guess.length - this.lowerCaseWord.length);
+			}
+
+			if(count === this.lowerCaseWord.length) {
 				//Player guessed the right word!
 				player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
 				player.score += player.scoreDelta;
@@ -397,17 +410,27 @@ class Room{
 					color: COLOR.LIME
 				});
 
+				socket.emit('secret', {
+					word: this.word
+				});
+
 				this.io.to(this.id).emit('update', {
 					id: player.id,
 					score: player.score
 				});
 
 				//check all players have scored
-				if(this.players.filter(x=>x.scoreDelta).length == this.playerCount - 1) {
+				if(this.players.filter(x=>x.scoreDelta).length === this.playerCount - 1) {
 					this.end('Everybody guessed the word!');
 				}
 				return 0;
-			} 
+			} else if(Math.abs(count-this.lowerCaseWord.length) === 1){
+				socket.emit('message', {
+					content: `${data} is close!`,
+					color: COLOR.GREEN
+				});
+				return 0;
+			}
 		}
 			//emit generic chat message
 		this.io.to(this.id).emit('message', {name: player.name, content: data});

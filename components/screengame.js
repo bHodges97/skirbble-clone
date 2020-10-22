@@ -71,9 +71,13 @@ class ScreenGame extends React.Component {
         choice: undefined,
         reason: '',
         word: data.word,
-        drawer: data.drawing,
-        drawing: this.socket.id == data.drawing,
       })
+      if(data.drawing) {
+        this.setState({
+          drawer: data.drawing,
+          drawing: this.socket.id == data.drawing,
+        });
+      }
     });
 
     this.socket.on('timer', (data)=>{
