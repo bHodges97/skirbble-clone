@@ -1,4 +1,5 @@
 import SocketContext from "components/socketcontext"
+import GameEnd from "./gameend"
 
 class Overlay extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class Overlay extends React.Component {
 
   render() {
     return (
-      <div id="overlay" style={{opacity: this.props.overlay?"1":"0"}}>
+      <div id="overlay" style={{opacity: this.props.gameState!=='drawing'?"1":"0"}}>
         <div className="content" style={{bottom: "0%"}}>
           {this.props.text != "" &&
             <div className="text">
@@ -39,15 +40,18 @@ class Overlay extends React.Component {
               {this.props.reason}
             </div>
           }
-          {this.props.scores != undefined &&
+          {this.props.gameState === 'roundEnd' &&
             <div className="revealContainer">
-              {this.props.scores.map((x,i)=>
+              {this.props.players.map((x,i)=>
                 <div className="player" key={i}>
                 <div className="name">{x.name}</div>
                 <div className="score" style={{color: x.change==0?'#e81300':'#07ea30'}}>{x.change==0?x.change:'+'+x.change}</div> 
                 </div>
               )}
             </div>
+          }
+          {this.props.gameState === 'gameEnd' && 
+            <GameEnd players={this.props.players}/>
           }
           </div>
         </div>

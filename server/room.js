@@ -19,7 +19,6 @@ const STATE = {
 	DRAW: 2,
 	END: 3,
 	GAMEEND: 4,
-
 }
 
 const COLOR = {

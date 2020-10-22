@@ -1,3 +1,4 @@
+import React from "react"
 import Canvas from "./canvas"
 import PlayerList from "./playerlist"
 import ChatArea from "./chatarea"
@@ -7,12 +8,11 @@ class ScreenGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      overlay: false,
+      gameState: 'lobby',
       text: '',
       choice: undefined, 
       word: '',
       reason: '',
-      scores: undefined,
       round: 1,
       timer: 80,
       end: null,
@@ -48,11 +48,10 @@ class ScreenGame extends React.Component {
     this.socket = this.context;
     this.socket.on('secret', (data)=>{
       this.setState({
-        overlay: false,
+        gameState: 'drawing',
         text: '',
         choice: undefined,
         reason: '',
-        scores: undefined,
         word: data.word,
         drawer: data.drawing,
         drawing: this.socket.id == data.drawing,
@@ -72,7 +71,7 @@ class ScreenGame extends React.Component {
     this.socket.on('round', (data)=>{
       this.setState({
         round: data,
-        overlay: true,
+        gameState: 'roundStart',
         text: "Round: " + data,
       });
     });
@@ -82,9 +81,8 @@ class ScreenGame extends React.Component {
       this.setState({
         drawer: null,
         drawing: false,
-        overlay: true,
+        gameState: 'roundEnd',
         reason: data.reason,
-        scores: data.scores,
         text: `The word was '${data.word}'.`,
         timer: 0
       })
@@ -97,22 +95,27 @@ class ScreenGame extends React.Component {
       this.setState({players: players});
     })
 
+    this.socket.on('gameEnd', (data)=>{
+      this.setState({
+        gameState: 'gameEnd',
+      });
+    });
+
+
     this.socket.on('choosing', (data)=>{
       this.setState({
-        overlay: true,
+        gameState: 'choosing',
         text: `${data} is choosing a word`,
         reason: '',
-        scores: undefined,
       })
     });
 
     this.socket.on('choice', (data)=>{
       this.setState({
-        overlay: true,
+        gameState: 'choosing',
         text: "Choose a word",
         choice: data,
         reason: '',
-        scores: undefined,
       })
     });
     
@@ -134,11 +137,14 @@ class ScreenGame extends React.Component {
 
     this.socket.on('update', (data)=>{
       let players = this.updateRanks(this.state.players);
-      console.log("update",players)
       
       for(let i=0; i < players.length; i++){
         if(players[i].id === data.id){
-          players[i] = {...players[i], score: data.score, change: 1}
+          players[i] = {
+            ...players[i],
+            score: data.score,
+            change: data.score-this.state.players[i].score
+          };
         }
       }
       this.setState({players: players});
@@ -158,7 +164,7 @@ class ScreenGame extends React.Component {
         </div>
         <div className="containerGame">
           <PlayerList players={this.state.players} drawer={this.state.drawer}/>
-          <Canvas overlay={this.state.overlay} text={this.state.text} choice={this.state.choice} reason={this.state.reason} scores={this.state.scores} drawing={this.state.drawing}/>
+          <Canvas gameState={this.state.gameState} text={this.state.text} choice={this.state.choice} reason={this.state.reason} players={this.state.players} drawing={this.state.drawing}/>
           <div id="containerSidebar">
             <div id="containerFreespace"/>
             <ChatArea/>

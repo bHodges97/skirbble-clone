@@ -1,5 +1,6 @@
+import React from "react"
 
-class Gameend extends React.Component {
+class GameEnd extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -11,7 +12,11 @@ class Gameend extends React.Component {
 
   render() {
     return (
-      <div className="containerGameEnd">
+      <div className="containerGameEnd" >
       </div>
     )
   }
+}
+
+export default GameEnd
+

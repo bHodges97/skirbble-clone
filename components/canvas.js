@@ -227,8 +227,8 @@ class Canvas extends React.Component {
       <div id="containerBoard">
         <div id="containerCanvas">
           <canvas className="doodleArea" ref={this.canvasRef} width="800" height="600" onMouseDown={this.mouseDown} onMouseMove={this.mouseMove} onMouseUp={this.mouseUp} onMouseLeave={()=>this.isInside=false} onMouseEnter={()=>this.isInside=true}/>
-          {this.props.overlay &&
-          <Overlay overlay={this.props.overlay} text={this.props.text} choice={this.props.choice} reason={this.props.reason} scores={this.props.scores}/>
+          {this.props.gameState !== 'drawing' &&
+          <Overlay gameState={this.props.gameState} text={this.props.text} choice={this.props.choice} reason={this.props.reason} players={this.props.players}/>
           }
         </div>
         <Toolbox callback={this.toolSelect} clear={this.clear} show={this.props.drawing} width={this.state.width} tool={this.state.tool} color={this.state.color}/>
