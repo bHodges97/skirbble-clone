@@ -114,6 +114,7 @@ class ScreenGame extends React.Component {
     this.socket.on('gameEnd', (data)=>{
       this.setState({
         gameState: 'gameEnd',
+        text: 'Result',
       });
     });
 

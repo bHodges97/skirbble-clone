@@ -35,7 +35,7 @@ class Room{
 		//game loop: lobby -> choice -> draw -> end
 		this.players = [];
 		this.playerCount = 0;
-		this.roundLimit = 1;
+		this.roundLimit = 3;
 		this.resetState();
 		this.memory = []
 	}
@@ -76,6 +76,7 @@ class Room{
 		}else if(this.state === STATE.LOBBY && this.playerCount > 1){
 			//start game
 			console.log("starting");
+			this.round = 0;
 			this.timer = setTimeout(()=>{this.newRound()}, 300);
 		}else if(
 			this.state === STATE.DRAW &&
@@ -219,25 +220,27 @@ class Room{
 		//return to choice
 		this.state = STATE.END;
 		//send results in descending order
-		let deltas = this.players.filter(x=>x.id!=this.currentPlayer);
-		deltas = deltas.map(x=>{
-			return {
-				name: x.name,
-				change: x.scoreDelta
+		let deltas = [];
+		let scores = 0;
+		let count = 0;
+		for(let i = 0; i < this.players.length; i++) {
+			if(this.players[i].id != this.currentPlayer) {
+				deltas.push({
+					name: this.players[i].name,
+					change: this.players[i].scoreDelta,
+				});
+				if(this.players[i].scoreDelta > 0) {
+					scores += this.players[i].scoreDelta;
+					count++;
+				}
 			}
-		});
+		}
 		let drawer = this.currentPlayerName;
 		//calculate drawer score = sum(changes) / correct guesses + 1
-		let drawerScore = Math.floor(deltas.reduce((x,y)=>x+y.change, 0) / (deltas.length + 1));  
+		let drawerScore = Math.floor(scores/(count+1));  
 		deltas.push({name: drawer, change: drawerScore});
 		deltas.sort((x,y)=>y.change-x.change)
 		
-		this.io.to(this.id).emit('end', {
-			reason: reason,
-			scores: deltas,
-			word: this.word
-		});
-
 		//update drawer score
 		let player = this.getPlayer(this.currentPlayer);
 		player.score+=drawerScore;
@@ -246,6 +249,11 @@ class Room{
 			score: player.score,
 		});
 
+		this.io.to(this.id).emit('end', {
+			reason: reason,
+			scores: deltas,
+			word: this.word
+		});
 		//wait 5 seconds and then continue game loop
 		setTimeout(()=>{this.sendChoices()}, 5000);
 
@@ -402,7 +410,8 @@ class Room{
 
 			if(count === this.lowerCaseWord.length) {
 				//Player guessed the right word!
-				player.scoreDelta = Math.floor(this.drawTime - (Date.now() - this.startTime) / 1000);
+				const guessTime = this.drawTime - (Date.now() - this.startTime) / 1000;
+				player.scoreDelta = Math.floor(guessTime/2)*10+200;
 				player.score += player.scoreDelta;
 
 				this.io.to(this.id).emit('message', {

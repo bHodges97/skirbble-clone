@@ -34,7 +34,7 @@ class Overlay extends React.Component {
               )}
             </div>
           }
-          {this.props.reason!='' &&
+          {this.props.gameState === 'roundEnd' &&
             <div className="revealReason">
               {this.props.reason}
             </div>
