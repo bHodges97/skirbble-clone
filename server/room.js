@@ -166,6 +166,9 @@ class Room{
 		for(let i=0; i < this.players.length; i++){
 			if(this.players[i].id == socket.id){
 				let name = this.players[i].name
+				if(this.players[i].id == this.currentPlayer) {
+					this.end('Player disconnected!');
+				}
 				this.players.splice(i,1);
 				this.playerCount = this.players.length;
 				this.updateStatus()
