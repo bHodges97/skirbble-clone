@@ -75,6 +75,13 @@ io.on('connect', socket => {
 	  rooms.get(clientrooms[1]).removePlayer(socket);
 	}
   });
+
+  socket.on('kick', () => {
+	const clientrooms = Object.keys(socket.rooms);
+	if(clientrooms.length == 2) {
+	  rooms.get(clientrooms[1]).kick(socket);
+	}
+  });
 });
 
 nextApp.prepare().then(() => {

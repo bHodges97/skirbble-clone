@@ -60,6 +60,7 @@ class Room{
 		this.memory = []
 		clearTimeout(this.timer);
 		this.timer = null;
+		this.votes = 0;
 
 		for(let player of this.players){
 			player.participated = false;
@@ -160,6 +161,13 @@ class Room{
 			this.io.to(player).emit(next.length==3?'fill':'draw',next);
 			setTimeout(()=>{this.redraw(player, index+1)}, 5);
 		}
+	}
+
+	kick(socket) {
+		if(socket.id === player.id) {
+			return -1;
+		}
+		this.votes += 1;
 	}
 
 	//on player leave to room
