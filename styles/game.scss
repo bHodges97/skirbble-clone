@@ -210,6 +210,10 @@
   }
 }
 
+@keyframes drop {
+  from {top: -600px;}
+  to {top: 0px;}
+}
 
 #overlay {
   position: absolute;
@@ -220,6 +224,9 @@
   opacity: 0;
   background: rgba(3,8,29,.8);
   text-shadow: 0 0 3px #000;
+  animation-name: drop;
+  animation-duration: 1s;
+
 
   .content {
     position: absolute;
